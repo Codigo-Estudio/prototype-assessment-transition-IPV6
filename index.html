@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Encuesta IPv4 → IPv6 — Dashboard</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/style.css" />
+
+    <!-- jsPDF (para generación de PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body>
+    <!-- Modal de inicio: datos obligatorios y aceptación -->
+    <div id="startModal" class="modal">
+      <h2>Iniciar Encuesta</h2>
+
+      <label for="companyName">Nombre de la empresa *</label>
+      <input id="companyName" type="text" placeholder="Empresa S.A." />
+
+      <label for="email">Correo electrónico *</label>
+      <input id="email" type="email" placeholder="contacto@empresa.com" />
+
+      <label class="checkbox-line">
+        <input id="accept" type="checkbox" />
+        Acepto el tratamiento de datos y el acuerdo de confidencialidad *
+      </label>
+
+      <div class="modal-actions">
+        <button id="startBtn" class="btn primary" disabled>
+          Iniciar encuesta
+        </button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <main id="dashboard" class="app-container hidden">
+      <header class="dash-header">
+        <div>
+          <h1>Panel de avance — Transición IPv4 → IPv6</h1>
+          <p class="lead">
+            Visualiza el estado de cada módulo. Haz clic en una tarjeta para
+            continuar o finalizar ese módulo.
+          </p>
+        </div>
+
+        <div class="dash-actions">
+          <button
+            id="exportPdfDashboardBtn"
+            class="btn primary"
+            disabled
+            title="Descargar reporte (activo cuando todos los módulos estén al 100%)"
+          >
+            Exportar PDF
+          </button>
+        </div>
+      </header>
+
+      <section id="cardsGrid" class="cards-grid" aria-live="polite">
+        <!-- Cards generadas por JS -->
+      </section>
+    </main>
+
+    <!-- Contenedor tipo "chat" / modal para preguntas del módulo (reutiliza diseño anterior) -->
+    <div id="chatContainer" class="hidden app-container chat-modal">
+      <!-- Indicador: nombre del módulo y preguntas pendientes -->
+      <div id="moduleInfo" class="module-info" style="display: none">
+        <span id="moduleLabel">Módulo</span>
+        <span class="dot">·</span>
+        <span id="remainingLabel">Preguntas restantes: 0</span>
+      </div>
+
+      <!-- Barra de progreso (global, basada en todas las preguntas) -->
+      <div id="progress" class="progress-wrap">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <!-- Area de chat / historial -->
+      <div id="chatBox" class="chat-box" aria-live="polite"></div>
+
+      <!-- Opciones (botones para cada pregunta) -->
+      <div
+        id="optionsContainer"
+        class="options"
+        role="group"
+        aria-label="Opciones de respuesta"
+      ></div>
+
+      <!-- Controles inferiores -->
+      <div id="controls" class="controls">
+        <button id="skipBtn" class="btn secondary" disabled>
+          Saltar pregunta
+        </button>
+        <button
+          id="exportPdfBtn"
+          class="btn tertiary"
+          title="Generar reporte PDF"
+        >
+          Exportar PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Mensaje final (se muestra tras terminar todo) -->
+    <div id="resultContainer" class="result hidden">
+      <h2>Encuesta finalizada</h2>
+      <p>
+        Gracias por participar. Puedes descargar el reporte desde el botón
+        'Exportar PDF'.
+      </p>
+    </div>
+
+    <!-- Script principal -->
+    <script src="js/app.js"></script>
+  </body>
+</html>
