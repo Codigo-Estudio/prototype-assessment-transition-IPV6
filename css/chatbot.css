@@ -1,0 +1,141 @@
+/* css/chatbot.css
+   Modal Chatbot (dialog) styles
+*/
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none; /* .active mostrará */
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 12, 15, 0.48);
+  z-index: 1200;
+  padding: var(--space-m);
+}
+.modal.active {
+  display: flex;
+}
+
+.modal-card {
+  width: min(720px, 96%);
+  background: var(--color-neutral-100);
+  border-radius: 14px;
+  box-shadow: 0 22px 60px rgba(11, 13, 15, 0.22);
+  padding: var(--space-m);
+  max-height: 92vh;
+  overflow: auto;
+  position: relative;
+  transform: translateY(6px);
+  transition: transform var(--transition-fast) ease,
+    opacity var(--transition-fast) ease;
+}
+
+/* Close button */
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  font-size: 1.35rem;
+  cursor: pointer;
+  color: var(--color-muted);
+}
+.modal-close:hover {
+  color: var(--color-dark);
+}
+
+/* Question + meta */
+.chatbot-question {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 var(--space-s) 0;
+  color: var(--color-dark);
+}
+.chatbot-meta {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-s);
+}
+
+/* Options list (vertical) */
+.chatbot-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: var(--space-s);
+}
+.chatbot-options button {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-neutral-100);
+  text-align: left;
+  cursor: pointer;
+  transition: transform var(--transition-fast),
+    background var(--transition-fast), box-shadow var(--transition-fast);
+  color: var(--color-dark);
+}
+.chatbot-options button:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(
+    90deg,
+    rgba(14, 165, 164, 0.08),
+    rgba(242, 183, 5, 0.03)
+  );
+}
+.chatbot-options button:active {
+  transform: translateY(0);
+}
+
+/* Selected feedback */
+.chatbot-options button.selected {
+  border-color: var(--color-primary-700);
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-primary-700)
+  );
+  color: var(--color-neutral-100);
+  box-shadow: 0 8px 26px rgba(11, 139, 137, 0.12);
+}
+
+/* Footer actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-s);
+  margin-top: var(--space-m);
+}
+#skipQuestion {
+  min-width: 140px;
+}
+
+/* Modal progress strip (opcional) */
+.modal-progress {
+  height: 6px;
+  width: 100%;
+  background: var(--color-neutral-200);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: var(--space-s);
+}
+.modal-progress .fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  transition: width 420ms ease;
+}
+
+/* Responsive modal tweaks */
+@media (max-width: 640px) {
+  .modal-card {
+    padding: var(--space-s);
+    width: 96%;
+  }
+  .chatbot-options button {
+    padding: 0.85rem;
+    font-size: 0.95rem;
+  }
+}

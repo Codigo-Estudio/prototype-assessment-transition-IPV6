@@ -1,0 +1,133 @@
+/* css/style.css
+   Tokens globales, reset y utilidades base
+*/
+
+/* Tipografía recomendada: Inter (usa link en head para import si quieres) */
+/* Ejemplo en index.html:
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* Tipografía */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+
+  /* Espaciados */
+  --space-xs: 4px;
+  --space-s: 8px;
+  --space-m: 16px;
+  --space-l: 24px;
+  --space-xl: 32px;
+
+  /* Radios y sombras */
+  --radius-sm: 8px;
+  --radius-base: 12px;
+  --shadow-soft: 0 8px 28px rgba(16, 24, 40, 0.06);
+  --shadow-hover: 0 14px 40px rgba(16, 24, 40, 0.1);
+
+  /* Transiciones */
+  --transition-fast: 180ms;
+  --transition-smooth: 350ms;
+
+  /* Paleta (Kit UI propio) */
+  --color-primary: #0ea5a4; /* verde-azulado */
+  --color-primary-700: #0b8b89;
+  --color-accent: #f2b705; /* mostaza */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --bg-main: #fbfdff;
+  --color-dark: #0f1724;
+  --color-muted: #6b7280;
+  --color-neutral-100: #ffffff;
+  --color-neutral-200: #f3f6f7;
+  --color-border: #e6eef0;
+}
+
+/* Reset / base */
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg-main);
+  color: var(--color-dark);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.45;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+.hidden {
+  display: none !important;
+}
+
+/* Layout container */
+.app-container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--space-l);
+}
+
+/* Typography scale */
+h1 {
+  font-size: 2rem;
+  margin: 0 0 var(--space-m) 0;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.5rem;
+  margin: 0 0 var(--space-s) 0;
+  font-weight: 600;
+}
+p {
+  margin: 0 0 var(--space-m) 0;
+  color: var(--color-muted);
+}
+
+/* Small helpers */
+.center {
+  text-align: center;
+}
+.row {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+.muted {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+.small {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+/* Focus visible: accesibilidad */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 3px solid rgba(14, 165, 164, 0.12);
+  outline-offset: 2px;
+}
+
+/* Utilities for layout */
+.util-space-bottom {
+  margin-bottom: var(--space-m);
+}

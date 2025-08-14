@@ -1,0 +1,65 @@
+/* css/main.css
+   Layout general y secciones principales (welcome, dashboard container, etc.)
+*/
+
+/* Welcome section */
+#welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--space-l);
+}
+.welcome-card {
+  width: 100%;
+  max-width: 920px;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 165, 164, 0.06),
+    rgba(242, 183, 5, 0.03)
+  );
+  border-radius: calc(var(--radius-base) + 4px);
+  padding: var(--space-l);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Dashboard section wrapper */
+#dashboard {
+  padding-top: var(--space-m);
+}
+
+/* Grid container placeholder (dashboard.css lo ampliará) */
+#dashboardCards {
+  display: grid;
+  gap: var(--space-l);
+  grid-template-columns: repeat(1, 1fr); /* ajustado por responsive */
+  margin-top: var(--space-m);
+}
+
+/* Controls row (ej. botón export) */
+.controls-row {
+  display: flex;
+  gap: var(--space-s);
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: var(--space-m);
+}
+
+/* Result / final screen */
+#resultContainer {
+  padding: var(--space-m);
+  border-radius: var(--radius-base);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-border);
+}
+
+/* Small page helpers */
+.card-ghost {
+  background: linear-gradient(
+    180deg,
+    rgba(14, 165, 164, 0.02),
+    rgba(242, 183, 5, 0.01)
+  );
+  padding: var(--space-s);
+  border-radius: var(--radius-sm);
+}

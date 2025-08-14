@@ -1,0 +1,103 @@
+/* css/dashboard.css
+   Dashboard: module cards, grid responsive y elementos específicos
+*/
+
+/* Module card */
+.module-card {
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-soft);
+  padding: var(--space-m);
+  border: 1px solid var(--color-border);
+  transition: transform var(--transition-smooth),
+    box-shadow var(--transition-smooth);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+.module-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+.module-card .card-top {
+  display: flex;
+  gap: var(--space-m);
+  align-items: center;
+}
+.module-card .icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 165, 164, 0.14),
+    rgba(242, 183, 5, 0.03)
+  );
+  color: var(--color-primary);
+  font-size: 1.4rem;
+}
+.module-card .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.module-card .card-title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-dark);
+  font-size: 1rem;
+}
+.module-card .card-subtitle {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.93rem;
+}
+
+/* Card bottom: progress & percent */
+.module-card .card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+  margin-top: 0.25rem;
+}
+.module-card .percent {
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+/* Badge placement example (top-right) */
+.module-card .badge-top {
+  position: absolute; /* use container with position:relative if you want this */
+  right: 12px;
+  top: 12px;
+}
+
+/* Grid responsive: mobile -> tablet -> desktop */
+@media (min-width: 640px) {
+  #dashboardCards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  #dashboardCards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Small screen adjustments */
+@media (max-width: 640px) {
+  .module-card {
+    padding: var(--space-s);
+  }
+  .controls-row {
+    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

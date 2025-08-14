@@ -3,41 +3,96 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- CSS (orden: tokens / components / main / dashboard / chatbot) -->
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/chatbot.css" />
-    <link rel="stylesheet" href="css/responsive.css" />
-    <!-- Librería jsPDF -->
+
+    <!-- Librería jsPDF (necesaria para export PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <title>Transición IPv4 a IPv6</title>
   </head>
-  <body>
-    <!-- Bienvenida -->
-    <section id="welcome">
-      <h1>Bienvenido</h1>
-      <p>
-        Este sistema le ayudará a evaluar la madurez de su empresa en la
-        transición de IPv4 a IPv6.
-      </p>
-      <button id="startSurvey">Iniciar Encuesta</button>
-    </section>
 
-    <!-- Dashboard -->
-    <section id="dashboard" class="hidden">
-      <h1>Dashboard</h1>
-      <p>Seleccione un módulo para continuar:</p>
-      <div id="dashboardCards"></div>
-      <button id="exportPdf" disabled>Exportar PDF</button>
-    </section>
+  <body>
+    <div class="app-container">
+      <!-- Bienvenida -->
+      <section id="welcome" class="section">
+        <div class="welcome-card">
+          <h1>Bienvenido</h1>
+          <p class="muted">
+            Este sistema le ayudará a evaluar la madurez de su empresa en la
+            transición de IPv4 a IPv6.
+          </p>
+          <div style="margin-top: 12px">
+            <button id="startSurvey" class="btn btn-primary">
+              Iniciar Encuesta
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard (inicialmente oculto, mostrado por main.js) -->
+      <section id="dashboard" class="section hidden" aria-hidden="true">
+        <h1>Dashboard</h1>
+        <p class="muted">Seleccione un módulo para continuar:</p>
+
+        <!-- Grid de cards -->
+        <div id="dashboardCards"></div>
+
+        <!-- Controles (Exportar PDF) -->
+        <div class="controls-row">
+          <button id="exportPdf" class="btn btn-primary" disabled>
+            Exportar PDF
+          </button>
+        </div>
+      </section>
+
+      <!-- Resultados / final (oculto) -->
+      <section id="resultContainer" class="section hidden" aria-hidden="true">
+        <h2>Encuesta finalizada</h2>
+        <p class="muted">
+          Gracias por participar. Puedes descargar el reporte desde el botón
+          'Exportar PDF'.
+        </p>
+      </section>
+    </div>
+    <!-- .app-container -->
 
     <!-- Modal Chatbot -->
-    <div id="chatbotModal" class="modal">
-      <div class="modal-content">
-        <button id="closeChatbot" class="modal-close">&times;</button>
-        <h2 id="chatbotQuestion"></h2>
-        <div id="chatbotOptions"></div>
-        <button id="skipQuestion">Saltar pregunta</button>
+    <div
+      id="chatbotModal"
+      class="modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-labelledby="chatbotQuestion"
+    >
+      <div class="modal-card">
+        <button id="closeChatbot" class="modal-close" aria-label="Cerrar">
+          &times;
+        </button>
+
+        <!-- Progresito (opcional) -->
+        <div class="modal-progress" aria-hidden="true">
+          <div class="fill" style="width: 0%"></div>
+        </div>
+
+        <h2 id="chatbotQuestion" class="chatbot-question">
+          <!-- texto actualizado por JS -->
+        </h2>
+
+        <div id="chatbotOptions" class="chatbot-options">
+          <!-- botones de opciones generados por JS -->
+        </div>
+
+        <div class="modal-actions">
+          <button id="skipQuestion" class="btn btn-secondary">
+            Saltar pregunta
+          </button>
+        </div>
       </div>
     </div>
 
