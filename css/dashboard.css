@@ -3,8 +3,8 @@
 */
 
 /* Module card */
-.module-card {
-  background: var(--color-neutral-100);
+.dashboard-card {
+  background: var(--color-neutral-200);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
   padding: var(--space-m);
@@ -15,68 +15,66 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-s);
+  align-items: center;
 }
-.module-card:hover {
+.dashboard-card:hover {
   transform: translateY(-6px);
   box-shadow: var(--shadow-hover);
 }
 
-.module-card .card-top {
+.dashboard-card .card-top {
   display: flex;
   gap: var(--space-m);
   align-items: center;
 }
 .card-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    180deg,
-    rgba(14, 165, 164, 0.14),
-    rgba(242, 183, 5, 0.03)
-  );
-  color: var(--color-primary);
-  font-size: 1.4rem;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  color: var(--color-neutral-100);
 }
+
 .card-icon svg {
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 25px;
 }
-.module-card .meta {
+
+.dashboard-card .meta {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-.module-card .card-title {
+.dashboard-card .card-title {
   margin: 0;
   font-weight: 700;
   color: var(--color-dark);
   font-size: 1rem;
 }
-.module-card .card-subtitle {
+.dashboard-card .card-subtitle {
   margin: 0;
   color: var(--color-muted);
   font-size: 0.93rem;
 }
 
 /* Card bottom: progress & percent */
-.module-card .card-bottom {
+.dashboard-card .card-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-s);
   margin-top: 0.25rem;
 }
-.module-card .percent {
+.dashboard-card .percent {
   font-weight: 700;
   color: var(--color-dark);
 }
 
 /* Badge placement example (top-right) */
-.module-card .badge-top {
+.dashboard-card .badge-top {
   position: absolute; /* use container with position:relative if you want this */
   right: 12px;
   top: 12px;
@@ -96,7 +94,7 @@
 
 /* Small screen adjustments */
 @media (max-width: 640px) {
-  .module-card {
+  .dashboard-card {
     padding: var(--space-s);
   }
   .controls-row {

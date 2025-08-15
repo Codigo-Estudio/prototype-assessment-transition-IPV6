@@ -3,11 +3,10 @@
 
 window.App = window.App || {};
 App.ui = App.ui || {};
+App.ui.components = App.ui.components || {}; // Asegura que existe
 
 (function (App) {
   "use strict";
-
-  App.ui.components = {};
 
   /**
    * Crea una barra de progreso.
@@ -37,7 +36,7 @@ App.ui = App.ui || {};
 
   /**
    * Crea una card de módulo.
-   * @param {Object} module - Módulo con {id, title, icon}.
+   * @param {Object} module - Módulo con {id, title}.
    * @param {number} progress - Porcentaje de avance del módulo.
    * @param {Function} onClick - Función a ejecutar al hacer clic.
    * @returns {HTMLElement}
@@ -48,7 +47,13 @@ App.ui = App.ui || {};
 
     const icon = document.createElement("div");
     icon.classList.add("card-icon");
-    icon.textContent = module.icon || "📊";
+
+    // Cargar el SVG del módulo si existe en App.moduleIcons
+    if (App.moduleIcons && App.moduleIcons[module.id]) {
+      icon.innerHTML = App.moduleIcons[module.id];
+    } else {
+      icon.textContent = "📊"; // Fallback si no hay icono definido
+    }
 
     const title = document.createElement("div");
     title.classList.add("card-title");
