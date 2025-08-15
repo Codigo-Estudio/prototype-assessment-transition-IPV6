@@ -10,21 +10,24 @@ window.App = window.App || {};
 
   /**
    * Lista de preguntas de la encuesta
-   * @type {Array<{ module: string, text: string, options: string[] }>}
+   * @type {Array<{ id: string, module: string, text: string, options: string[] }> }
    */
   App.questions = [
     // ---------------- Perfil de la organización ----------------
     {
+      id: "perfil_1",
       module: "perfil",
       text: "¿Cuál es el tamaño de su organización?",
       options: ["Pequeña", "Mediana", "Grande", "Muy grande"],
     },
     {
+      id: "perfil_2",
       module: "perfil",
       text: "¿En qué sector opera su organización?",
       options: ["Tecnología", "Educación", "Salud", "Otro"],
     },
     {
+      id: "perfil_3",
       module: "perfil",
       text: "¿Cuál es el número aproximado de empleados?",
       options: ["1-50", "51-200", "201-500", "Más de 500"],
@@ -32,6 +35,7 @@ window.App = window.App || {};
 
     // ---------------- Infraestructura y red ----------------
     {
+      id: "infraestructura_1",
       module: "infraestructura",
       text: "¿Su red interna utiliza direccionamiento IPv6 actualmente?",
       options: [
@@ -42,6 +46,7 @@ window.App = window.App || {};
       ],
     },
     {
+      id: "infraestructura_2",
       module: "infraestructura",
       text: "¿Tiene hardware compatible con IPv6?",
       options: ["Sí, todo", "Sí, parcialmente", "No", "No lo sé"],
@@ -49,6 +54,7 @@ window.App = window.App || {};
 
     // ---------------- Planificación y gobernanza ----------------
     {
+      id: "planificacion_1",
       module: "planificacion",
       text: "¿Existe un plan formal para la transición a IPv6?",
       options: [
@@ -59,6 +65,7 @@ window.App = window.App || {};
       ],
     },
     {
+      id: "planificacion_2",
       module: "planificacion",
       text: "¿Quién lidera el proyecto de transición a IPv6?",
       options: ["Equipo de TI", "Proveedor externo", "No definido", "Otro"],
@@ -66,6 +73,7 @@ window.App = window.App || {};
 
     // ---------------- Operaciones y pruebas ----------------
     {
+      id: "operaciones_1",
       module: "operaciones",
       text: "¿Ha realizado pruebas de compatibilidad IPv6?",
       options: [
@@ -76,6 +84,7 @@ window.App = window.App || {};
       ],
     },
     {
+      id: "operaciones_2",
       module: "operaciones",
       text: "¿Cuenta con un entorno de pruebas dedicado para IPv6?",
       options: ["Sí", "No", "No, pero en proceso", "No lo sé"],
@@ -83,11 +92,13 @@ window.App = window.App || {};
 
     // ---------------- Seguridad ----------------
     {
+      id: "seguridad_1",
       module: "seguridad",
       text: "¿Sus firewalls soportan IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
     },
     {
+      id: "seguridad_2",
       module: "seguridad",
       text: "¿Tiene políticas de seguridad específicas para IPv6?",
       options: ["Sí, implementadas", "En desarrollo", "No", "No lo sé"],
@@ -95,11 +106,13 @@ window.App = window.App || {};
 
     // ---------------- Proveedores y nube ----------------
     {
+      id: "proveedores_1",
       module: "proveedores",
       text: "¿Sus proveedores de internet ofrecen soporte IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
     },
     {
+      id: "proveedores_2",
       module: "proveedores",
       text: "¿Sus servicios en la nube soportan IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
@@ -107,11 +120,13 @@ window.App = window.App || {};
 
     // ---------------- Capacitación y talento ----------------
     {
+      id: "capacitacion_1",
       module: "capacitacion",
       text: "¿Su equipo de TI ha recibido capacitación en IPv6?",
       options: ["Sí, completa", "Sí, parcial", "No", "No lo sé"],
     },
     {
+      id: "capacitacion_2",
       module: "capacitacion",
       text: "¿Existen planes de formación continua en IPv6?",
       options: ["Sí", "No", "En evaluación", "No lo sé"],
@@ -119,11 +134,13 @@ window.App = window.App || {};
 
     // ---------------- Ecosistema y tecnologías futuras ----------------
     {
+      id: "ecosistema_1",
       module: "ecosistema",
       text: "¿Colabora con otras organizaciones para la transición a IPv6?",
       options: ["Sí, activamente", "Ocasionalmente", "No", "No lo sé"],
     },
     {
+      id: "ecosistema_2",
       module: "ecosistema",
       text: "¿Su organización investiga tecnologías emergentes relacionadas con IPv6?",
       options: ["Sí, regularmente", "Ocasionalmente", "No", "No lo sé"],

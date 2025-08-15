@@ -17,31 +17,37 @@ window.App = window.App || {};
     skipBtn = document.getElementById("skipQuestion");
     closeBtn = document.getElementById("closeChatbot");
 
-    // modal progress fill (optional)
+    // barra de progreso del modal (opcional)
     const progressContainer = document.querySelector(".modal-progress");
     modalProgressFill = progressContainer
       ? progressContainer.querySelector(".fill")
       : null;
 
+    // Limpia y vuelve a asignar listener al botón de saltar
     if (skipBtn) {
+      const newSkipBtn = skipBtn.cloneNode(true);
+      skipBtn.parentNode.replaceChild(newSkipBtn, skipBtn);
+      skipBtn = newSkipBtn;
       skipBtn.addEventListener("click", () => {
-        // delegate to moduleManager
         App.moduleManager.skipCurrent();
       });
     }
 
+    // Limpia y vuelve a asignar listener al botón de cerrar
     if (closeBtn) {
+      const newCloseBtn = closeBtn.cloneNode(true);
+      closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+      closeBtn = newCloseBtn;
       closeBtn.addEventListener("click", () => {
-        // closing with X: persist remaining as skipped
         App.moduleManager.closeModuleSession();
       });
     }
 
-    // Ensure modal hide on init
+    // Asegurar que el modal inicie oculto
     App.chatbot.hide();
   };
 
-  // Show modal (uses App.ui.modal if available, else toggles class)
+  // Mostrar modal
   App.chatbot.show = function () {
     if (App.ui && App.ui.modal && typeof App.ui.modal.open === "function") {
       App.ui.modal.open("chatbotModal");
@@ -52,6 +58,7 @@ window.App = window.App || {};
     }
   };
 
+  // Ocultar modal
   App.chatbot.hide = function () {
     if (App.ui && App.ui.modal && typeof App.ui.modal.close === "function") {
       App.ui.modal.close("chatbotModal");
@@ -62,20 +69,21 @@ window.App = window.App || {};
     }
   };
 
-  // Load a question object into the modal.
+  // Cargar una pregunta en el modal
   // question = { id, text, options: [...] }
-  // modalProgressPercent: optional number 0-100 to update the modal progress bar
+  // modalProgressPercent: porcentaje de progreso 0-100
   App.chatbot.loadQuestion = function (question, modalProgressPercent = 0) {
     if (!questionEl || !optionsEl) {
       console.error("chatbot: elementos DOM no encontrados");
       return;
     }
 
-    // Render question text
+    // Texto de la pregunta
     questionEl.textContent = question.text || "";
 
-    // Render options as buttons
+    // Limpiar opciones previas y sus listeners
     optionsEl.innerHTML = "";
+
     if (Array.isArray(question.options) && question.options.length) {
       question.options.forEach((opt) => {
         const btn = document.createElement("button");
@@ -83,9 +91,7 @@ window.App = window.App || {};
         btn.type = "button";
         btn.textContent = opt;
         btn.addEventListener("click", () => {
-          // visual feedback
           btn.classList.add("selected");
-          // short delay so user sees selection, then call moduleManager.answerCurrent
           setTimeout(() => {
             App.moduleManager.answerCurrent(opt);
           }, 200);
@@ -93,7 +99,7 @@ window.App = window.App || {};
         optionsEl.appendChild(btn);
       });
     } else {
-      // If no options, show a fallback "Continuar" button
+      // Fallback si no hay opciones
       const btn = document.createElement("button");
       btn.className = "option-btn";
       btn.textContent = "Continuar";
@@ -101,23 +107,23 @@ window.App = window.App || {};
       optionsEl.appendChild(btn);
     }
 
-    // Update modal progress bar (if present)
+    // Actualizar barra de progreso del modal
     if (modalProgressFill) {
       modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
     }
 
-    // Show the modal
+    // Mostrar modal
     App.chatbot.show();
   };
 
-  // Optional helper: update modal progress externally
+  // Actualizar barra de progreso externamente
   App.chatbot.setModalProgress = function (percent) {
     if (modalProgressFill) {
       modalProgressFill.style.width = (percent || 0) + "%";
     }
   };
 
-  // Initialize immediately if DOM is ready
+  // Inicializar cuando el DOM esté listo
   if (
     document.readyState === "complete" ||
     document.readyState === "interactive"

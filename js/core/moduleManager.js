@@ -1,16 +1,16 @@
 // js/core/moduleManager.js
-// Lógica central para manejo de módulos, preguntas, respuestas, saltos y persistencia.
-// Responsable: startModule, navegar preguntas, responder/saltar, cerrar con 'X', calcular progreso y exponer API pública.
+// Lógica central para el manejo de módulos, preguntas, respuestas, saltos y persistencia.
+// Controla el inicio de módulo, navegación de preguntas, responder/saltar, cierre con "X", cálculo de progreso y expone API pública.
 
 window.App = window.App || {};
 
 (function (App) {
   "use strict";
 
-  // --- storage helpers (usa App.storage si existe, sino localStorage) ---
+  // --- Manejo de almacenamiento (usa App.storage si existe, si no localStorage) ---
   const STORAGE_KEY = "ipv6_survey_v1";
 
-  function readStore() {
+  function leerAlmacenamiento() {
     try {
       if (App.storage && typeof App.storage.get === "function") {
         const s = App.storage.get(STORAGE_KEY);
@@ -20,12 +20,12 @@ window.App = window.App || {};
         return raw ? JSON.parse(raw) : {};
       }
     } catch (e) {
-      console.warn("moduleManager: error reading store", e);
+      console.warn("moduleManager: error leyendo almacenamiento", e);
       return {};
     }
   }
 
-  function writeStore(obj) {
+  function guardarAlmacenamiento(obj) {
     try {
       const str = JSON.stringify(obj || {});
       if (App.storage && typeof App.storage.set === "function") {
@@ -34,65 +34,55 @@ window.App = window.App || {};
         localStorage.setItem(STORAGE_KEY, str);
       }
     } catch (e) {
-      console.warn("moduleManager: error writing store", e);
+      console.warn("moduleManager: error guardando almacenamiento", e);
     }
   }
 
-  // shape of store:
+  // Estructura de almacenamiento:
   // {
-  //   answers: { [questionId]: { answer: 'op', ts: 123 } },
-  //   skipped: { [questionId]: true },
-  //   seen: { [questionId]: true } // optional: questions already shown at least once
+  //   answers: { [idPregunta]: { answer: 'op', ts: 123 } },
+  //   skipped: { [idPregunta]: true }
   // }
 
-  // --- module manager object ---
   App.moduleManager = App.moduleManager || {};
 
-  // Current runtime session state
+  // Estado actual en memoria
   let state = {
     currentModuleId: null,
-    questionList: [], // ordered array of question objects to navigate in this session
-    index: 0, // current index in questionList
-    seenCount: 0, // number of questions seen in this modal session (used for modal progress)
-    totalForModule: 0, // total number of questions in this module (constant for calculating modal progress)
+    questionList: [], // Lista de preguntas del módulo actual
+    index: 0, // Índice de la pregunta actual
+    seenCount: 0, // Preguntas vistas en esta sesión del modal
+    totalForModule: 0, // Total de preguntas del módulo
   };
 
-  // Utility to get all questions for a module from App.questions
-  function getModuleQuestions(moduleId) {
+  // Obtiene todas las preguntas de un módulo
+  function obtenerPreguntasModulo(moduleId) {
     if (!Array.isArray(App.questions)) return [];
     return App.questions.filter((q) => q.module === moduleId);
   }
 
-  // Public: compute per-module answered count (only counts real answers, not skipped)
+  // Devuelve cuántas preguntas han sido respondidas (sin contar saltadas)
   App.moduleManager.getAnsweredCount = function (moduleId) {
-    const store = readStore();
+    const store = leerAlmacenamiento();
     const answers = store.answers || {};
-    const moduleQs = getModuleQuestions(moduleId).map((q) => q.id);
-    let cnt = 0;
-    moduleQs.forEach((qid) => {
-      if (answers[qid]) cnt++;
-    });
-    return cnt;
+    const moduleQs = obtenerPreguntasModulo(moduleId).map((q) => q.id);
+    return moduleQs.filter((qid) => answers[qid]).length;
   };
 
-  // Public: compute per-module skipped count
+  // Devuelve cuántas preguntas han sido saltadas
   App.moduleManager.getSkippedCount = function (moduleId) {
-    const store = readStore();
+    const store = leerAlmacenamiento();
     const skipped = store.skipped || {};
-    const moduleQs = getModuleQuestions(moduleId).map((q) => q.id);
-    let cnt = 0;
-    moduleQs.forEach((qid) => {
-      if (skipped[qid]) cnt++;
-    });
-    return cnt;
+    const moduleQs = obtenerPreguntasModulo(moduleId).map((q) => q.id);
+    return moduleQs.filter((qid) => skipped[qid]).length;
   };
 
-  // Public: total questions for module
+  // Devuelve el total de preguntas de un módulo
   App.moduleManager.getTotalQuestions = function (moduleId) {
-    return getModuleQuestions(moduleId).length;
+    return obtenerPreguntasModulo(moduleId).length;
   };
 
-  // Public: dashboard progress for module (only answered count / total)
+  // Calcula el progreso de un módulo (solo respondidas / total)
   App.moduleManager.getModuleProgress = function (moduleId) {
     const total = App.moduleManager.getTotalQuestions(moduleId) || 0;
     if (total === 0) return 0;
@@ -100,251 +90,166 @@ window.App = window.App || {};
     return Math.round((answered / total) * 100);
   };
 
-  // Internal: build a question list when entering a module
-  // Behavior:
-  //  - If there are skipped questions for this module, load only those (in original order)
-  //  - Otherwise load all questions of the module that are NOT answered yet
-  function buildQuestionList(moduleId) {
-    const allQs = getModuleQuestions(moduleId);
-    const store = readStore();
+  // Construye la lista de preguntas para iniciar el módulo
+  function construirListaPreguntas(moduleId) {
+    const todas = obtenerPreguntasModulo(moduleId);
+    const store = leerAlmacenamiento();
     const answers = store.answers || {};
     const skipped = store.skipped || {};
 
-    // Build skipped list for this module (original ordering)
-    const skippedList = allQs.filter((q) => skipped[q.id]);
+    const saltadas = todas.filter((q) => skipped[q.id]);
+    if (saltadas.length > 0) return saltadas.slice();
 
-    if (skippedList.length > 0) {
-      // We will revisit only skipped ones (pending)
-      return skippedList.slice();
-    }
-
-    // Otherwise return unanswered questions (exclude answers)
-    const unanswered = allQs.filter((q) => !answers[q.id]);
-    return unanswered.slice();
+    return todas.filter((q) => !answers[q.id]);
   }
 
-  // Public: start a module (called from UI when clicking a card)
+  // Inicia un módulo desde el dashboard
   App.moduleManager.startModule = function (moduleId) {
-    // prepare state
     state.currentModuleId = moduleId;
-    const list = buildQuestionList(moduleId);
-    state.questionList = list;
+    state.questionList = construirListaPreguntas(moduleId);
     state.index = 0;
     state.seenCount = 0;
     state.totalForModule =
-      App.moduleManager.getTotalQuestions(moduleId) || list.length;
+      App.moduleManager.getTotalQuestions(moduleId) ||
+      state.questionList.length;
 
-    // If there are no questions to show (all answered and no skipped), show toast and return.
-    const answered = App.moduleManager.getAnsweredCount(moduleId);
     const total = App.moduleManager.getTotalQuestions(moduleId);
+    const answered = App.moduleManager.getAnsweredCount(moduleId);
+
     if (total > 0 && answered === total) {
-      // toast: module already complete
-      showToast(
-        `El módulo "${getModuleTitle(moduleId)}" ya está completo.`,
-        5000
-      );
+      App.toast.show(`El módulo ${getModuleTitle(moduleId)} ya está completo.`);
+
       return;
     }
 
-    // Start by loading the first question (or show message if none)
     if (state.questionList.length === 0) {
-      // nothing to do (maybe everything answered)
       App.ui.showDashboard && App.ui.showDashboard();
       return;
     }
 
-    // Show first question via chatbot API
     const q = state.questionList[state.index];
-    App.chatbot.loadQuestion(q, computeModalProgress()); // pass current modal progress percent
+    App.chatbot.loadQuestion(q, calcularProgresoModal());
   };
 
-  // Helper to compute modal progress percent (seen / total)
-  function computeModalProgress() {
+  // Calcula el porcentaje de progreso del modal (solo respondidas)
+  function calcularProgresoModal() {
     const total = state.totalForModule || 1;
-    return Math.round((state.seenCount / total) * 100);
+    const store = leerAlmacenamiento();
+    const answers = store.answers || {};
+    const respondidas = obtenerPreguntasModulo(state.currentModuleId).filter(
+      (q) => answers[q.id]
+    ).length;
+    return Math.round((respondidas / total) * 100);
   }
 
-  // Helper to get module title by id (App.modules)
+  // Obtiene el título del módulo
   function getModuleTitle(moduleId) {
     if (!Array.isArray(App.modules)) return moduleId;
     const m = App.modules.find((x) => x.id === moduleId);
     return m ? m.title : moduleId;
   }
 
-  // Answer current question with selected option value
+  // Registra respuesta y pasa a la siguiente pregunta
   App.moduleManager.answerCurrent = function (selectedOption) {
     const q = state.questionList[state.index];
-    if (!q) return;
+    if (!q || !q.id) return;
 
-    const store = readStore();
+    const store = leerAlmacenamiento();
     store.answers = store.answers || {};
     store.skipped = store.skipped || {};
-    // Save answer
+
     store.answers[q.id] = { answer: selectedOption, ts: Date.now() };
-    // If it was previously skipped, remove from skipped
     if (store.skipped[q.id]) delete store.skipped[q.id];
-    writeStore(store);
 
-    // Mark seen and advance progress
-    state.seenCount++;
+    guardarAlmacenamiento(store);
+
     state.index++;
-
-    // If we exhausted questionList -> end module session
     if (state.index >= state.questionList.length) {
-      // final step: close modal and refresh dashboard
-      finalizeAndCloseModule();
+      finalizarYCerrarModulo();
       return;
     }
 
-    // otherwise load next question
-    const nextQ = state.questionList[state.index];
-    App.chatbot.loadQuestion(nextQ, computeModalProgress());
+    App.chatbot.loadQuestion(
+      state.questionList[state.index],
+      calcularProgresoModal()
+    );
   };
 
-  // Skip current question (mark as pending)
+  // Marca la pregunta como saltada y pasa a la siguiente
   App.moduleManager.skipCurrent = function () {
     const q = state.questionList[state.index];
-    if (!q) return;
+    if (!q || !q.id) return;
 
-    const store = readStore();
+    const store = leerAlmacenamiento();
     store.skipped = store.skipped || {};
     store.skipped[q.id] = true;
-    writeStore(store);
+    guardarAlmacenamiento(store);
 
-    state.seenCount++;
     state.index++;
-
-    // If we exhausted questionList -> end module session
     if (state.index >= state.questionList.length) {
-      finalizeAndCloseModule();
+      finalizarYCerrarModulo();
       return;
     }
 
-    // otherwise load next
-    const nextQ = state.questionList[state.index];
-    App.chatbot.loadQuestion(nextQ, computeModalProgress());
+    App.chatbot.loadQuestion(
+      state.questionList[state.index],
+      calcularProgresoModal()
+    );
   };
 
-  // Finalize module session: close modal, refresh dashboard UI
-  function finalizeAndCloseModule() {
-    // Notify UI to refresh (dashboard)
-    if (
-      App.ui &&
-      App.ui.dashboard &&
-      typeof App.ui.dashboard.refresh === "function"
-    ) {
-      App.ui.dashboard.refresh();
-    }
-    // Close chatbot modal
-    if (App.chatbot && typeof App.chatbot.hide === "function") {
+  // Finaliza la sesión y cierra el modal
+  function finalizarYCerrarModulo() {
+    if (App.ui?.dashboard?.refresh) App.ui.dashboard.refresh();
+    if (App.chatbot?.hide) {
       App.chatbot.hide();
     } else {
-      // fallback: remove active class
-      const modal = document.getElementById("chatbotModal");
-      modal && modal.classList.remove("active");
+      document.getElementById("chatbotModal")?.classList.remove("active");
     }
-    // Reset runtime state
-    state.currentModuleId = null;
-    state.questionList = [];
-    state.index = 0;
-    state.seenCount = 0;
-    state.totalForModule = 0;
+    state = {
+      currentModuleId: null,
+      questionList: [],
+      index: 0,
+      seenCount: 0,
+      totalForModule: 0,
+    };
   }
 
-  // Close via X: mark all remaining questions in the session as skipped (pending),
-  // persist, refresh dashboard, and close modal
+  // Cierra el modal con "X" guardando progreso
   App.moduleManager.closeModuleSession = function () {
     if (!state.currentModuleId) {
-      // nothing to do
-      if (App.chatbot && typeof App.chatbot.hide === "function")
-        App.chatbot.hide();
+      App.chatbot?.hide?.();
       return;
     }
 
-    const store = readStore();
+    const store = leerAlmacenamiento();
     store.skipped = store.skipped || {};
 
-    // Mark remaining questions as skipped
     for (let i = state.index; i < state.questionList.length; i++) {
       const q = state.questionList[i];
       if (q && !store.skipped[q.id]) store.skipped[q.id] = true;
     }
-    writeStore(store);
+    guardarAlmacenamiento(store);
 
-    // Refresh dashboard
-    if (
-      App.ui &&
-      App.ui.dashboard &&
-      typeof App.ui.dashboard.refresh === "function"
-    ) {
-      App.ui.dashboard.refresh();
-    }
+    if (App.ui?.dashboard?.refresh) App.ui.dashboard.refresh();
+    App.chatbot?.hide?.() ||
+      document.getElementById("chatbotModal")?.classList.remove("active");
 
-    // Close modal
-    if (App.chatbot && typeof App.chatbot.hide === "function") {
-      App.chatbot.hide();
-    } else {
-      const modal = document.getElementById("chatbotModal");
-      modal && modal.classList.remove("active");
-    }
-
-    // Reset state
-    state.currentModuleId = null;
-    state.questionList = [];
-    state.index = 0;
-    state.seenCount = 0;
-    state.totalForModule = 0;
+    state = {
+      currentModuleId: null,
+      questionList: [],
+      index: 0,
+      seenCount: 0,
+      totalForModule: 0,
+    };
   };
 
-  // Public: get number of pending questions for a module
+  // Obtiene el número de preguntas pendientes
   App.moduleManager.getPendingCount = function (moduleId) {
-    const store = readStore();
+    const store = leerAlmacenamiento();
     const skipped = store.skipped || {};
-    const moduleQs = getModuleQuestions(moduleId).map((q) => q.id);
-    let cnt = 0;
-    moduleQs.forEach((qid) => {
-      if (skipped[qid]) cnt++;
-    });
-    return cnt;
+    const moduleQs = obtenerPreguntasModulo(moduleId).map((q) => q.id);
+    return moduleQs.filter((qid) => skipped[qid]).length;
   };
 
-  // Toast helper (top-right, fades after duration). Creates ephemeral element.
-  function showToast(message, duration = 5000) {
-    try {
-      const toast = document.createElement("div");
-      toast.className = "app-toast";
-      toast.textContent = message;
-      Object.assign(toast.style, {
-        position: "fixed",
-        top: "16px",
-        right: "16px",
-        background: "rgba(15,23,36,0.95)",
-        color: "#fff",
-        padding: "10px 14px",
-        borderRadius: "8px",
-        zIndex: 99999,
-        boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-        opacity: "0",
-        transition: "opacity 300ms ease, transform 300ms ease",
-        transform: "translateY(-6px)",
-      });
-      document.body.appendChild(toast);
-      // force reflow
-      setTimeout(() => {
-        toast.style.opacity = "1";
-        toast.style.transform = "translateY(0)";
-      }, 20);
-
-      setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(-6px)";
-        setTimeout(() => toast.remove(), 400);
-      }, duration);
-    } catch (e) {
-      console.warn("showToast error", e);
-    }
-  }
-
-  // Expose for tests/debug
   App.moduleManager._state = state;
 })(window.App);

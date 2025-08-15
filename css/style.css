@@ -21,7 +21,8 @@
 
   /* Radios y sombras */
   --radius-sm: 8px;
-  --radius-base: 12px;
+  --radius-md: 12px;
+  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
   --shadow-soft: 0 8px 28px rgba(16, 24, 40, 0.06);
   --shadow-hover: 0 14px 40px rgba(16, 24, 40, 0.1);
 
