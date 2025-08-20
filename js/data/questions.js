@@ -15,28 +15,28 @@ window.App = window.App || {};
   App.questions = [
     // ---------------- Perfil de la organización ----------------
     {
-      id: "perfil_1",
-      module: "perfil",
+      id: "qns_perfil_1",
+      module: "mod_perfil",
       text: "¿Cuál es el tamaño de su organización?",
       options: ["Pequeña", "Mediana", "Grande", "Muy grande"],
     },
     {
-      id: "perfil_2",
-      module: "perfil",
+      id: "qns_perfil_2",
+      module: "mod_perfil",
       text: "¿En qué sector opera su organización?",
       options: ["Tecnología", "Educación", "Salud", "Otro"],
     },
     {
-      id: "perfil_3",
-      module: "perfil",
+      id: "qns_perfil_3",
+      module: "mod_perfil",
       text: "¿Cuál es el número aproximado de empleados?",
       options: ["1-50", "51-200", "201-500", "Más de 500"],
     },
 
     // ---------------- Infraestructura y red ----------------
     {
-      id: "infraestructura_1",
-      module: "infraestructura",
+      id: "qns_infraestructura_1",
+      module: "mod_infraestructura",
       text: "¿Su red interna utiliza direccionamiento IPv6 actualmente?",
       options: [
         "Sí, completamente",
@@ -46,16 +46,16 @@ window.App = window.App || {};
       ],
     },
     {
-      id: "infraestructura_2",
-      module: "infraestructura",
+      id: "qns_infraestructura_2",
+      module: "mod_infraestructura",
       text: "¿Tiene hardware compatible con IPv6?",
       options: ["Sí, todo", "Sí, parcialmente", "No", "No lo sé"],
     },
 
     // ---------------- Planificación y gobernanza ----------------
     {
-      id: "planificacion_1",
-      module: "planificacion",
+      id: "qns_planificacion_1",
+      module: "mod_planificacion",
       text: "¿Existe un plan formal para la transición a IPv6?",
       options: [
         "Sí, documentado",
@@ -65,16 +65,16 @@ window.App = window.App || {};
       ],
     },
     {
-      id: "planificacion_2",
-      module: "planificacion",
+      id: "qns_planificacion_2",
+      module: "mod_planificacion",
       text: "¿Quién lidera el proyecto de transición a IPv6?",
       options: ["Equipo de TI", "Proveedor externo", "No definido", "Otro"],
     },
 
     // ---------------- Operaciones y pruebas ----------------
     {
-      id: "operaciones_1",
-      module: "operaciones",
+      id: "qns_operaciones_1",
+      module: "mod_operaciones",
       text: "¿Ha realizado pruebas de compatibilidad IPv6?",
       options: [
         "Sí, exitosas",
@@ -84,64 +84,64 @@ window.App = window.App || {};
       ],
     },
     {
-      id: "operaciones_2",
-      module: "operaciones",
+      id: "qns_operaciones_2",
+      module: "mod_operaciones",
       text: "¿Cuenta con un entorno de pruebas dedicado para IPv6?",
       options: ["Sí", "No", "No, pero en proceso", "No lo sé"],
     },
 
     // ---------------- Seguridad ----------------
     {
-      id: "seguridad_1",
-      module: "seguridad",
+      id: "qns_seguridad_1",
+      module: "mod_seguridad",
       text: "¿Sus firewalls soportan IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
     },
     {
-      id: "seguridad_2",
-      module: "seguridad",
+      id: "qns_seguridad_2",
+      module: "mod_seguridad",
       text: "¿Tiene políticas de seguridad específicas para IPv6?",
       options: ["Sí, implementadas", "En desarrollo", "No", "No lo sé"],
     },
 
     // ---------------- Proveedores y nube ----------------
     {
-      id: "proveedores_1",
-      module: "proveedores",
+      id: "qns_proveedores_1",
+      module: "mod_proveedores",
       text: "¿Sus proveedores de internet ofrecen soporte IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
     },
     {
-      id: "proveedores_2",
-      module: "proveedores",
+      id: "qns_proveedores_2",
+      module: "mod_proveedores",
       text: "¿Sus servicios en la nube soportan IPv6?",
       options: ["Sí, todos", "Sí, algunos", "No", "No lo sé"],
     },
 
     // ---------------- Capacitación y talento ----------------
     {
-      id: "capacitacion_1",
-      module: "capacitacion",
+      id: "qns_capacitacion_1",
+      module: "mod_capacitacion",
       text: "¿Su equipo de TI ha recibido capacitación en IPv6?",
       options: ["Sí, completa", "Sí, parcial", "No", "No lo sé"],
     },
     {
-      id: "capacitacion_2",
-      module: "capacitacion",
+      id: "qns_capacitacion_2",
+      module: "mod_capacitacion",
       text: "¿Existen planes de formación continua en IPv6?",
       options: ["Sí", "No", "En evaluación", "No lo sé"],
     },
 
     // ---------------- Ecosistema y tecnologías futuras ----------------
     {
-      id: "ecosistema_1",
-      module: "ecosistema",
+      id: "qns_ecosistema_1",
+      module: "mod_ecosistema",
       text: "¿Colabora con otras organizaciones para la transición a IPv6?",
       options: ["Sí, activamente", "Ocasionalmente", "No", "No lo sé"],
     },
     {
-      id: "ecosistema_2",
-      module: "ecosistema",
+      id: "qns_ecosistema_2",
+      module: "mod_ecosistema",
       text: "¿Su organización investiga tecnologías emergentes relacionadas con IPv6?",
       options: ["Sí, regularmente", "Ocasionalmente", "No", "No lo sé"],
     },

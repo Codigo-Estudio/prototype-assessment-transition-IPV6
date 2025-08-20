@@ -9,8 +9,7 @@
 
 :root {
   /* Tipografía */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial,
-    sans-serif;
+  --font-sans: "Poppins", sans-serif;
 
   /* Espaciados */
   --space-xs: 4px;
@@ -38,7 +37,7 @@
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
   --bg-main: #fbfdff;
-  --color-dark: #0f1724;
+  --color-dark: #333333;
   --color-muted: #6b7280;
   --color-neutral-100: #ffffff;
   --color-neutral-200: #f3f6f7;
@@ -58,7 +57,7 @@ body {
   background: var(--bg-main);
   color: var(--color-dark);
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 1.125rem;
   line-height: 1.45;
 }
 img {
@@ -84,16 +83,21 @@ a {
 h1 {
   font-size: 2rem;
   margin: 0 0 var(--space-m) 0;
-  font-weight: 700;
+  font-weight: 700; /* Bold */
+  text-align: center;
+  font-family: var(--font-sans);
+  text-wrap: balance;
+  font-size: clamp(1.8rem, 1.0599rem + 1.8779vw, 2.5rem);
 }
 h2 {
   font-size: 1.5rem;
   margin: 0 0 var(--space-s) 0;
-  font-weight: 600;
+  font-weight: 500; /* Medium */
 }
 p {
   margin: 0 0 var(--space-m) 0;
   color: var(--color-muted);
+  font-weight: 400; /* Regular */
 }
 
 /* Small helpers */
