@@ -11,6 +11,7 @@ window.App = window.App || {};
 
   // historial por módulo y módulo actual
   App.chatbot._currentModuleId = null;
+  App.chatbot._currentQuestionId = null;
   App.chatbot._historyPrefix = "chat_history_";
 
   App.chatbot._historyKey = function (moduleId) {
@@ -75,6 +76,57 @@ window.App = window.App || {};
     } catch (e) {
       // si storage falla, no romper la UI
       console.warn("chatbot: no se pudo guardar historial", e);
+    }
+  };
+
+  // Marca en el historial del módulo que las quick replies del último mensaje del bot
+  // fueron ocultadas/consumidas, para que al recargar la conversación no vuelvan a aparecer.
+  App.chatbot._markQuickRepliesHidden = function (
+    moduleId,
+    botText,
+    questionId
+  ) {
+    if (!moduleId) moduleId = App.chatbot._currentModuleId || "global";
+    const key = App.chatbot._historyKey(moduleId);
+    let list = [];
+    try {
+      list = JSON.parse(localStorage.getItem(key) || "[]");
+    } catch (e) {
+      list = [];
+    }
+
+    // buscar desde el final la última entrada del bot que tenga quickReplies y no esté marcada
+    for (let i = list.length - 1; i >= 0; i--) {
+      const m = list[i];
+      if (
+        !m ||
+        m.role !== "bot" ||
+        !m.opts ||
+        !Array.isArray(m.opts.quickReplies) ||
+        m.opts._repliesHidden
+      )
+        continue;
+      // si se pasó questionId, emparejar por id; si no, caer a emparejar por texto
+      if (typeof questionId !== "undefined" && questionId !== null) {
+        if (m.opts.questionId && m.opts.questionId === questionId) {
+          m.opts._repliesHidden = true;
+          break;
+        }
+      } else {
+        if (
+          typeof botText === "undefined" ||
+          (m.text || "") === (botText || "")
+        ) {
+          m.opts._repliesHidden = true;
+          break;
+        }
+      }
+    }
+
+    try {
+      localStorage.setItem(key, JSON.stringify(list));
+    } catch (e) {
+      // noop
     }
   };
 
@@ -213,6 +265,10 @@ window.App = window.App || {};
       ? App.moduleManager.getPendingCount(moduleId)
       : 0;
 
+    // establecer currentQuestionId para que los handlers puedan referenciarla
+    App.chatbot._currentQuestionId =
+      question && question.id ? question.id : null;
+
     if (!seen) {
       // Welcome por primera vez
       App.chatbot._showTyping(450);
@@ -226,6 +282,7 @@ window.App = window.App || {};
         setTimeout(() => {
           App.chatbot._pushBotMessage(question.text || "", {
             avatar: "bot",
+            questionId: App.chatbot._currentQuestionId,
             quickReplies: Array.isArray(question.options)
               ? question.options
               : undefined,
@@ -256,6 +313,7 @@ window.App = window.App || {};
         setTimeout(() => {
           App.chatbot._pushBotMessage(question.text || "", {
             avatar: "bot",
+            questionId: App.chatbot._currentQuestionId,
             quickReplies: Array.isArray(question.options)
               ? question.options
               : undefined,
@@ -272,6 +330,7 @@ window.App = window.App || {};
     setTimeout(() => {
       App.chatbot._pushBotMessage(question.text || "", {
         avatar: "bot",
+        questionId: App.chatbot._currentQuestionId,
         quickReplies: Array.isArray(question.options)
           ? question.options
           : undefined,
@@ -333,6 +392,22 @@ window.App = window.App || {};
         el.querySelectorAll("button").forEach((b) => (b.disabled = true));
         el.style.display = "none";
         el.setAttribute("aria-hidden", "true");
+
+        // marcar en el historial del módulo que estas quick replies están ocultas
+        try {
+          // intentar usar el currentQuestionId si está disponible; caer a texto si no
+          const qid = App.chatbot._currentQuestionId || null;
+          // intentar encontrar el texto del burbuja del bot asociada (anteriorSibling)
+          const botBubble = el.previousElementSibling;
+          const botText = botBubble ? botBubble.textContent : undefined;
+          App.chatbot._markQuickRepliesHidden(
+            App.chatbot._currentModuleId,
+            botText,
+            qid
+          );
+        } catch (e) {
+          // noop
+        }
       });
     } catch (e) {
       // noop
@@ -388,8 +463,13 @@ window.App = window.App || {};
       });
     }
 
-    // quick replies
-    if (opts && Array.isArray(opts.quickReplies) && opts.quickReplies.length) {
+    // quick replies: sólo renderizar si no vienen marcadas como ocultas
+    if (
+      opts &&
+      Array.isArray(opts.quickReplies) &&
+      opts.quickReplies.length &&
+      !opts._repliesHidden
+    ) {
       const qr = document.createElement("div");
       qr.className = "chat-quick-replies";
       opts.quickReplies.forEach((r) => {
@@ -404,6 +484,14 @@ window.App = window.App || {};
             );
             qr.style.display = "none";
             qr.setAttribute("aria-hidden", "true");
+            // marcar en el historial que estas quick replies fueron consumidas/ocultas
+            try {
+              const moduleId = App.chatbot._currentModuleId || "global";
+              const qid = App.chatbot._currentQuestionId || null;
+              App.chatbot._markQuickRepliesHidden(moduleId, text, qid);
+            } catch (e) {
+              /* noop */
+            }
           } catch (e) {
             /* noop */
           }
