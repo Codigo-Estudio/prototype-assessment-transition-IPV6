@@ -185,6 +185,15 @@ window.App = window.App || {};
     store.skipped[q.id] = true;
     guardarAlmacenamiento(store);
 
+    // ocultar quick replies visibles en el UI (si existe)
+    try {
+      App.chatbot &&
+        typeof App.chatbot._hideActiveQuickReplies === "function" &&
+        App.chatbot._hideActiveQuickReplies();
+    } catch (e) {
+      // noop
+    }
+
     state.index++;
     if (state.index >= state.questionList.length) {
       finalizarYCerrarModulo();
@@ -229,6 +238,15 @@ window.App = window.App || {};
       if (q && !store.skipped[q.id]) store.skipped[q.id] = true;
     }
     guardarAlmacenamiento(store);
+
+    // ocultar quick replies visibles en el UI (si existe)
+    try {
+      App.chatbot &&
+        typeof App.chatbot._hideActiveQuickReplies === "function" &&
+        App.chatbot._hideActiveQuickReplies();
+    } catch (e) {
+      // noop
+    }
 
     if (App.ui?.dashboard?.refresh) App.ui.dashboard.refresh();
     App.chatbot?.hide?.() ||

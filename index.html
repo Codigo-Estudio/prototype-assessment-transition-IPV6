@@ -85,11 +85,17 @@
           <div class="fill" style="width: 0%"></div>
         </div>
 
-        <h2 id="chatbotQuestion" class="chatbot-question">
+        <!-- Conversación estilo chat -->
+        <div id="chatConversation" class="chat-conversation" aria-live="polite">
+          <!-- Mensajes se agregarán dinámicamente aquí -->
+        </div>
+
+        <!-- Fallback: estructura clásica (se preserva por compatibilidad) -->
+        <h2 id="chatbotQuestion" class="chatbot-question" hidden>
           <!-- texto actualizado por JS -->
         </h2>
 
-        <div id="chatbotOptions" class="chatbot-options">
+        <div id="chatbotOptions" class="chatbot-options" hidden>
           <!-- botones de opciones generados por JS -->
         </div>
 

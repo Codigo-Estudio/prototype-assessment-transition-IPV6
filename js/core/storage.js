@@ -90,4 +90,43 @@ window.App = window.App || {};
     const state = App.storage.loadState();
     return state.answers || {};
   };
+
+  /**
+   * Guarda el array completo de mensajes de conversación para un módulo.
+   * @param {string} moduleId
+   * @param {Array} messages - [{role, text, ts}]
+   */
+  App.storage.saveConversation = function (moduleId, messages) {
+    if (!moduleId) return;
+    const state = App.storage.loadState();
+    state.conversations = state.conversations || {};
+    state.conversations[moduleId] = Array.isArray(messages) ? messages : [];
+    App.storage.saveState(state);
+  };
+
+  /**
+   * Obtiene la conversación guardada para un módulo.
+   * @param {string} moduleId
+   * @returns {Array}
+   */
+  App.storage.getConversation = function (moduleId) {
+    if (!moduleId) return [];
+    const state = App.storage.loadState();
+    state.conversations = state.conversations || {};
+    return state.conversations[moduleId] || [];
+  };
+
+  /**
+   * Añade un mensaje al final de la conversación de un módulo.
+   * @param {string} moduleId
+   * @param {Object} message - {role, text, ts}
+   */
+  App.storage.appendConversationMessage = function (moduleId, message) {
+    if (!moduleId || !message) return;
+    const state = App.storage.loadState();
+    state.conversations = state.conversations || {};
+    state.conversations[moduleId] = state.conversations[moduleId] || [];
+    state.conversations[moduleId].push(message);
+    App.storage.saveState(state);
+  };
 })(window.App);
