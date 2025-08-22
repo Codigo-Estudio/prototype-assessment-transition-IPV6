@@ -271,26 +271,33 @@ window.App = window.App || {};
 
     if (!seen) {
       // Welcome por primera vez
-      App.chatbot._showTyping(450);
+      if (modalProgressFill)
+        modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
+
+      App.chatbot._showTyping(1500);
       setTimeout(() => {
         App.chatbot._pushBotMessage(
-          "Hola, soy Alex. Te acompa\u00f1aré en esta evaluación. Aquí tienes el módulo que seleccionaste."
+          "Hola, soy Alex. Te acompa\u00f1aré en esta evaluación para ayudarte en la transición a IPv6."
         );
-        App.chatbot._markWelcomeSeen(moduleId);
-        // después del saludo, mostrar la pregunta
-        App.chatbot._showTyping(500);
+        App.chatbot._showTyping(900);
         setTimeout(() => {
-          App.chatbot._pushBotMessage(question.text || "", {
-            avatar: "bot",
-            questionId: App.chatbot._currentQuestionId,
-            quickReplies: Array.isArray(question.options)
-              ? question.options
-              : undefined,
-          });
-          if (modalProgressFill)
-            modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
-        }, 600);
-      }, 600);
+          App.chatbot._pushBotMessage(
+            "Así que empecemos con la primera pregunta."
+          );
+          App.chatbot._markWelcomeSeen(moduleId);
+          // después del saludo, mostrar la pregunta
+          App.chatbot._showTyping(900);
+          setTimeout(() => {
+            App.chatbot._pushBotMessage(question.text || "", {
+              avatar: "bot",
+              questionId: App.chatbot._currentQuestionId,
+              quickReplies: Array.isArray(question.options)
+                ? question.options
+                : undefined,
+            });
+          }, 1000);
+        }, 1000);
+      }, 1600);
       return;
     }
 
@@ -303,13 +310,16 @@ window.App = window.App || {};
       (pending > 0 || answered < totalQs) &&
       (moduleId !== prevModuleId || !wasActive)
     ) {
-      App.chatbot._showTyping(350);
+      if (modalProgressFill)
+        modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
+
+      App.chatbot._showTyping(1500);
       setTimeout(() => {
         App.chatbot._pushBotMessage(
           "Hola, estás de regreso. Vamos a continuar con las preguntas pendientes."
         );
         // luego la pregunta
-        App.chatbot._showTyping(400);
+        App.chatbot._showTyping(900);
         setTimeout(() => {
           App.chatbot._pushBotMessage(question.text || "", {
             avatar: "bot",
@@ -318,15 +328,13 @@ window.App = window.App || {};
               ? question.options
               : undefined,
           });
-          if (modalProgressFill)
-            modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
-        }, 500);
-      }, 450);
+        }, 1000);
+      }, 1600);
       return;
     }
 
     // Caso normal: mostrar pregunta sin mensajes adicionales
-    App.chatbot._showTyping(400);
+    App.chatbot._showTyping(900);
     setTimeout(() => {
       App.chatbot._pushBotMessage(question.text || "", {
         avatar: "bot",
@@ -337,7 +345,7 @@ window.App = window.App || {};
       });
       if (modalProgressFill)
         modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
-    }, 500);
+    }, 1000);
   };
 
   // Push helpers
