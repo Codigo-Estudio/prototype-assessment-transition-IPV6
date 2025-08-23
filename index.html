@@ -127,8 +127,35 @@
     <script src="js/ui/componentsUI.js"></script>
     <script src="js/ui/dashboardUI.js"></script>
     <script src="js/ui/modalUI.js"></script>
+    <script src="js/ui/messageModal.js"></script>
 
     <!-- MAIN -->
     <script src="js/main.js"></script>
+
+    <!-- Message Modal HTML -->
+    <div
+      id="messageModalBackdrop"
+      class="message-modal-backdrop"
+      aria-hidden="true"
+    >
+      <div
+        id="messageModal"
+        class="message-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+      >
+        <div class="icon" aria-hidden="true"></div>
+        <div class="content">
+          <h3 class="title">Título</h3>
+          <p class="body">Cuerpo del mensaje</p>
+          <div class="actions">
+            <button class="btn btn-primary" data-message-dismiss>
+              Entendido
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

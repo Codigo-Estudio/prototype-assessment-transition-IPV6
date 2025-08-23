@@ -214,6 +214,50 @@ window.App = window.App || {};
     } else {
       document.getElementById("chatbotModal")?.classList.remove("active");
     }
+    // Mostrar modal de felicitaciones al completar el módulo
+    try {
+      const mid = state.currentModuleId;
+      const pending = App.moduleManager.getPendingCount(mid);
+      if (pending === 0) {
+        const title = "Felicidades";
+        const moduleName =
+          Array.isArray(App.modules) && App.modules.find((m) => m.id === mid)
+            ? App.modules.find((m) => m.id === mid).title
+            : mid;
+        const body = `Haz logrado completar con satisfacción el modulo **${moduleName}**.`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: title,
+            body: body,
+            opacity: 0.7,
+          });
+        }
+      }
+      if (pending > 0) {
+        const wordQ = pending === 1 ? "pregunta" : "preguntas";
+        const wordP = pending === 1 ? "pendiente" : "pendientes";
+        const body = `Tienes aún **${pending}** ${wordQ} ${wordP} por responder`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: "No lo olvides",
+            body: body,
+            opacity: 0.6,
+          });
+        }
+      }
+    } catch (e) {
+      // noop
+    }
     state = {
       currentModuleId: null,
       questionList: [],
@@ -251,6 +295,31 @@ window.App = window.App || {};
     if (App.ui?.dashboard?.refresh) App.ui.dashboard.refresh();
     App.chatbot?.hide?.() ||
       document.getElementById("chatbotModal")?.classList.remove("active");
+
+    // Mostrar recordatorio si quedan pendientes al cerrar sesión
+    try {
+      const mid = state.currentModuleId;
+      const pending = App.moduleManager.getPendingCount(mid);
+      if (pending > 0) {
+        const wordQ = pending === 1 ? "pregunta" : "preguntas";
+        const wordP = pending === 1 ? "pendiente" : "pendientes";
+        const body = `Tienes aún **${pending}** ${wordQ} ${wordP} por responder`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: "No lo olvides",
+            body: body,
+            opacity: 0.6,
+          });
+        }
+      }
+    } catch (e) {
+      // noop
+    }
 
     state = {
       currentModuleId: null,
