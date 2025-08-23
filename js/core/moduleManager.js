@@ -241,7 +241,7 @@ window.App = window.App || {};
       if (pending > 0) {
         const wordQ = pending === 1 ? "pregunta" : "preguntas";
         const wordP = pending === 1 ? "pendiente" : "pendientes";
-        const body = `Tienes aún **${pending}** ${wordQ} ${wordP} por responder`;
+        const body = `Tienes **${pending}** ${wordQ} ${wordP} por responder`;
         if (
           App.ui &&
           App.ui.messageModal &&

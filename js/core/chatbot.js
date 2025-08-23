@@ -277,7 +277,7 @@ window.App = window.App || {};
       App.chatbot._showTyping(1500);
       setTimeout(() => {
         App.chatbot._pushBotMessage(
-          "Hola, soy Alex. Te acompa\u00f1aré en esta evaluación para ayudarte en la transición a IPv6."
+          "Hola, soy **Alex**. Te acompañaré en esta evaluación para ayudarte en la transición a IPv6."
         );
         App.chatbot._showTyping(900);
         setTimeout(() => {
@@ -316,7 +316,7 @@ window.App = window.App || {};
       App.chatbot._showTyping(1500);
       setTimeout(() => {
         App.chatbot._pushBotMessage(
-          "Hola, estás de regreso. Vamos a continuar con las preguntas pendientes."
+          "**Hola, estás de regreso. Vamos a continuar con las preguntas pendientes.**"
         );
         // luego la pregunta
         App.chatbot._showTyping(900);
@@ -447,7 +447,23 @@ window.App = window.App || {};
 
     const bubble = document.createElement("div");
     bubble.className = "chat-bubble";
-    bubble.textContent = text || "";
+    // soportar marcado simple **bold** dentro del texto
+    (function () {
+      const raw = text || "";
+      // escape básico de HTML para evitar inyección
+      const escapeHtml = (s) =>
+        String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+
+      const safe = escapeHtml(raw);
+      // reemplazar **texto** por <strong>texto</strong>
+      const html = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      bubble.innerHTML = html;
+    })();
 
     if (role === "bot") {
       wrap.appendChild(avatar);

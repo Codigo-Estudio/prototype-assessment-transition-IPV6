@@ -1,4 +1,4 @@
-// js/core/notifications.js
+// js/core/messageToast.js
 // Sistema global de notificaciones tipo toast, alineado al estilo de la web
 
 window.App = window.App || {};
