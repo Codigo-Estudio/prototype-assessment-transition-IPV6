@@ -135,6 +135,46 @@ window.App = window.App || {};
   // flags
   App.chatbot._welcomeShown = false;
   App.chatbot._welcomeScheduled = false;
+  // timers pendientes (para cancelar cuando el modal se cierra)
+  App.chatbot._pendingTimers = [];
+
+  App.chatbot._schedule = function (fn, ms) {
+    try {
+      const id = setTimeout(function () {
+        try {
+          fn();
+        } finally {
+          const idx = App.chatbot._pendingTimers.indexOf(id);
+          if (idx !== -1) App.chatbot._pendingTimers.splice(idx, 1);
+        }
+      }, ms);
+      App.chatbot._pendingTimers.push(id);
+      return id;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  App.chatbot._clearPending = function () {
+    try {
+      (App.chatbot._pendingTimers || []).forEach((id) => clearTimeout(id));
+    } catch (e) {
+      // noop
+    }
+    App.chatbot._pendingTimers = [];
+    // remover indicadores de typing actuales del DOM
+    try {
+      if (convoEl) {
+        const typingEls = convoEl.querySelectorAll(".chat-bubble.typing");
+        typingEls.forEach((el) => {
+          const parent = el.parentNode;
+          parent && parent.parentNode && parent.parentNode.removeChild(parent);
+        });
+      }
+    } catch (e) {
+      // noop
+    }
+  };
 
   App.chatbot.init = function () {
     questionEl = document.getElementById("chatbotQuestion");
@@ -201,7 +241,7 @@ window.App = window.App || {};
       !App.chatbot._welcomeScheduled
     ) {
       App.chatbot._welcomeScheduled = true;
-      setTimeout(() => {
+      App.chatbot._schedule(() => {
         App.chatbot._welcomeScheduled = false;
         App.chatbot._welcome();
       }, 250);
@@ -217,6 +257,9 @@ window.App = window.App || {};
       modal && modal.classList.remove("active");
       modal && modal.setAttribute("aria-hidden", "true");
     }
+
+    // cancelar timers pendientes y limpiar typing indicators
+    App.chatbot._clearPending();
   };
 
   // Cargar una pregunta en el modal
@@ -275,19 +318,19 @@ window.App = window.App || {};
         modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
 
       App.chatbot._showTyping(1500);
-      setTimeout(() => {
+      App.chatbot._schedule(() => {
         App.chatbot._pushBotMessage(
           "Hola, soy **Alex**. Te acompañaré en esta evaluación para ayudarte en la transición a IPv6."
         );
         App.chatbot._showTyping(900);
-        setTimeout(() => {
+        App.chatbot._schedule(() => {
           App.chatbot._pushBotMessage(
             "Así que empecemos con la primera pregunta."
           );
           App.chatbot._markWelcomeSeen(moduleId);
           // después del saludo, mostrar la pregunta
           App.chatbot._showTyping(900);
-          setTimeout(() => {
+          App.chatbot._schedule(() => {
             App.chatbot._pushBotMessage(question.text || "", {
               avatar: "bot",
               questionId: App.chatbot._currentQuestionId,
@@ -314,13 +357,13 @@ window.App = window.App || {};
         modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
 
       App.chatbot._showTyping(1500);
-      setTimeout(() => {
+      App.chatbot._schedule(() => {
         App.chatbot._pushBotMessage(
           "**Hola, estás de regreso. Vamos a continuar con las preguntas pendientes.**"
         );
         // luego la pregunta
         App.chatbot._showTyping(900);
-        setTimeout(() => {
+        App.chatbot._schedule(() => {
           App.chatbot._pushBotMessage(question.text || "", {
             avatar: "bot",
             questionId: App.chatbot._currentQuestionId,
@@ -335,7 +378,7 @@ window.App = window.App || {};
 
     // Caso normal: mostrar pregunta sin mensajes adicionales
     App.chatbot._showTyping(900);
-    setTimeout(() => {
+    App.chatbot._schedule(() => {
       App.chatbot._pushBotMessage(question.text || "", {
         avatar: "bot",
         questionId: App.chatbot._currentQuestionId,
@@ -385,9 +428,12 @@ window.App = window.App || {};
 
     convoEl.appendChild(typingEl);
     convoEl.scrollTop = convoEl.scrollHeight;
-    setTimeout(() => {
-      if (typingEl && typingEl.parentNode)
-        typingEl.parentNode.removeChild(typingEl);
+    // programar eliminación usando el scheduler para poder cancelarlo si el modal se cierra
+    App.chatbot._schedule(() => {
+      try {
+        if (typingEl && typingEl.parentNode)
+          typingEl.parentNode.removeChild(typingEl);
+      } catch (e) {}
     }, duration);
   };
 
@@ -524,7 +570,7 @@ window.App = window.App || {};
           App.chatbot._pushUserMessage(r);
 
           // delegar a moduleManager después de pequeña pausa para quick replies normales
-          setTimeout(() => App.moduleManager.answerCurrent(r), 250);
+          App.chatbot._schedule(() => App.moduleManager.answerCurrent(r), 250);
         });
         qr.appendChild(b);
       });

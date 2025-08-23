@@ -8,19 +8,30 @@ window.App = window.App || {};
 
   const DEFAULT_DURATION = 3000;
   let activeToast = null;
+  let activeHideTimer = null;
+  let activeRemoveTimer = null;
 
   App.toast = {
     show(message) {
       try {
         // Si hay un toast visible, eliminarlo antes de mostrar el nuevo
         if (activeToast) {
+          // cancelar timers pendientes del toast anterior
+          try {
+            if (activeHideTimer) clearTimeout(activeHideTimer);
+            if (activeRemoveTimer) clearTimeout(activeRemoveTimer);
+          } catch (e) {}
+
+          // animar salida y eliminar luego
           activeToast.classList.remove("show");
+          const prev = activeToast;
+          activeToast = null;
+          // eliminar el nodo anterior tras la animación corta
           setTimeout(() => {
             try {
-              activeToast.remove();
+              prev.remove();
             } catch (e) {}
           }, 320);
-          activeToast = null;
         }
 
         const toast = document.createElement("div");
@@ -36,13 +47,24 @@ window.App = window.App || {};
         });
 
         // Ocultar después de duración estándar
-        setTimeout(() => {
+        if (activeHideTimer)
+          try {
+            clearTimeout(activeHideTimer);
+          } catch (e) {}
+        if (activeRemoveTimer)
+          try {
+            clearTimeout(activeRemoveTimer);
+          } catch (e) {}
+
+        activeHideTimer = setTimeout(() => {
           toast.classList.remove("show");
-          setTimeout(() => {
+          activeRemoveTimer = setTimeout(() => {
             try {
               toast.remove();
             } catch (e) {}
             if (activeToast === toast) activeToast = null;
+            activeHideTimer = null;
+            activeRemoveTimer = null;
           }, 420);
         }, DEFAULT_DURATION);
       } catch (e) {
