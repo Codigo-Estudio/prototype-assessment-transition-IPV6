@@ -190,3 +190,37 @@
   display: flex;
   justify-content: flex-end;
 }
+
+/* ---------- Toast component ---------- */
+.app-toast {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--color-primary, #0ea5a4);
+  color: var(--color-neutral-100, #ffffff);
+  font-family: var(--font-sans, sans-serif);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm, 8px);
+  z-index: 99999;
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(16, 24, 40, 0.08));
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 300ms ease, transform 300ms ease;
+  pointer-events: auto;
+  text-align: right;
+}
+.app-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .app-toast {
+    left: 12px;
+    right: 12px;
+    top: 12px;
+    font-size: 14px;
+  }
+}
