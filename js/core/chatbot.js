@@ -162,6 +162,10 @@ window.App = window.App || {};
       // noop
     }
     App.chatbot._pendingTimers = [];
+    // Ensure skip is disabled when clearing pending typing/messages
+    try {
+      App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(false);
+    } catch (e) {}
     // remover indicadores de typing actuales del DOM
     try {
       if (convoEl) {
@@ -170,6 +174,26 @@ window.App = window.App || {};
           const parent = el.parentNode;
           parent && parent.parentNode && parent.parentNode.removeChild(parent);
         });
+      }
+    } catch (e) {
+      // noop
+    }
+  };
+
+  // Habilitar / deshabilitar el botón de "Saltar pregunta"
+  App.chatbot._setSkipEnabled = function (enabled) {
+    try {
+      if (!skipBtn) return;
+      skipBtn.disabled = !enabled;
+      // visual indicator class when disabled (spinner / opacity)
+      if (!enabled) {
+        skipBtn.classList.add("skip-loading");
+        skipBtn.setAttribute("aria-busy", "true");
+        skipBtn.setAttribute("aria-disabled", "true");
+      } else {
+        skipBtn.classList.remove("skip-loading");
+        skipBtn.removeAttribute("aria-busy");
+        skipBtn.removeAttribute("aria-disabled");
       }
     } catch (e) {
       // noop
@@ -197,6 +221,10 @@ window.App = window.App || {};
       skipBtn.addEventListener("click", () => {
         App.moduleManager.skipCurrent();
       });
+      // start disabled until a question is rendered
+      try {
+        App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(false);
+      } catch (e) {}
     }
 
     // Limpia y vuelve a asignar listener al botón de cerrar
@@ -293,6 +321,9 @@ window.App = window.App || {};
     let wasActive = false;
     if (modalEl) wasActive = modalEl.classList.contains("active");
 
+    // Disable skip until the question is fully rendered
+    App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(false);
+
     // Mostrar modal
     App.chatbot.show();
 
@@ -338,6 +369,8 @@ window.App = window.App || {};
                 ? question.options
                 : undefined,
             });
+            // enable skip once the question has been pushed/rendered
+            App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(true);
           }, 1000);
         }, 1000);
       }, 1600);
@@ -371,6 +404,7 @@ window.App = window.App || {};
               ? question.options
               : undefined,
           });
+          App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(true);
         }, 1000);
       }, 1600);
       return;
@@ -386,6 +420,7 @@ window.App = window.App || {};
           ? question.options
           : undefined,
       });
+      App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(true);
       if (modalProgressFill)
         modalProgressFill.style.width = (modalProgressPercent || 0) + "%";
     }, 1000);
@@ -579,6 +614,20 @@ window.App = window.App || {};
 
     // autoscroll al final
     convoEl.scrollTop = convoEl.scrollHeight;
+    // If this is the bot message that contains the current question, enable skip
+    try {
+      if (
+        role === "bot" &&
+        opts &&
+        opts.questionId &&
+        App.chatbot._currentQuestionId &&
+        opts.questionId === App.chatbot._currentQuestionId
+      ) {
+        App.chatbot._setSkipEnabled && App.chatbot._setSkipEnabled(true);
+      }
+    } catch (e) {
+      /* noop */
+    }
   }
 
   // Actualizar barra de progreso externamente

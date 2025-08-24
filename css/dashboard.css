@@ -17,11 +17,22 @@
   gap: var(--space-s);
   align-items: center;
 }
-.dashboard-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
+
+@media (hover: hover) and (pointer: fine) {
+  /* Efectos hover solo para dispositivos que soportan hover (escritorio) */
+  .dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+  }
 }
 
+/* Táctil / responsivo: aplica el efecto en active (tocar/clic) para que no se quede pegado en dispositivos táctiles */
+@media (hover: none) and (pointer: coarse), (max-width: 640px) {
+  .dashboard-card:active {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+}
 .dashboard-card .card-top {
   display: flex;
   gap: var(--space-m);
@@ -101,5 +112,10 @@
     justify-content: center;
     flex-direction: column;
     align-items: stretch;
+  }
+  /* Evitar highlight/outline en mobile al tocar/seleccionar la card */
+  .dashboard-card {
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
   }
 }

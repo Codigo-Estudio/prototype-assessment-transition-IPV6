@@ -52,11 +52,6 @@
   margin: 0 0 var(--space-s) 0;
   color: var(--color-dark);
 }
-.chatbot-meta {
-  color: var(--color-muted);
-  font-size: 0.95rem;
-  margin-bottom: var(--space-s);
-}
 
 /* Options list (vertical) */
 .chatbot-options {
