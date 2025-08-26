@@ -12,6 +12,7 @@ window.App = window.App || {};
   const dashboardContainer = document.getElementById("dashboard");
   const cardsContainer = document.getElementById("dashboardCards");
   const exportButton = document.getElementById("exportPdf");
+  const resetButton = document.getElementById("resetSurvey");
 
   /**
    * Inicializa el dashboard.
@@ -24,6 +25,7 @@ window.App = window.App || {};
 
     renderCards();
     updateExportButton();
+    attachResetHandler();
   };
 
   /**
@@ -67,6 +69,70 @@ window.App = window.App || {};
     renderCards();
     updateExportButton();
   };
+
+  function attachResetHandler() {
+    if (!resetButton) return;
+    // avoid duplicate listeners
+    try {
+      resetButton.replaceWith(resetButton.cloneNode(true));
+    } catch (e) {}
+    const btn = document.getElementById("resetSurvey");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      // Clear app storage via App.storage if available
+      try {
+        if (App.storage && typeof App.storage.clearState === "function") {
+          App.storage.clearState();
+        }
+      } catch (e) {}
+
+      // Also clear other known keys used by moduleManager
+      try {
+        localStorage.removeItem("ipv6_survey_v1");
+      } catch (e) {}
+
+      // Optionally clear chat histories per module keys
+      try {
+        Object.keys(localStorage).forEach((k) => {
+          if (k && k.indexOf("chat_history_") === 0) localStorage.removeItem(k);
+          if (k && k.indexOf("chat_welcome_seen_") === 0)
+            localStorage.removeItem(k);
+        });
+      } catch (e) {}
+
+      // Refresh dashboard and modules
+      try {
+        if (
+          App.ui &&
+          App.ui.dashboard &&
+          typeof App.ui.dashboard.refresh === "function"
+        )
+          App.ui.dashboard.refresh();
+        if (App.ui && typeof App.ui.showDashboard === "function")
+          App.ui.showDashboard();
+        if (App.moduleManager && App.moduleManager._state) {
+          App.moduleManager._state = {
+            currentModuleId: null,
+            questionList: [],
+            index: 0,
+            seenCount: 0,
+            totalForModule: 0,
+          };
+        }
+      } catch (e) {}
+
+      // Notify user
+      try {
+        if (App.toast && typeof App.toast.show === "function") {
+          App.toast.show(
+            "Datos reiniciados. Puedes iniciar una nueva evaluación."
+          );
+        } else {
+          alert("Datos reiniciados. Puedes iniciar una nueva evaluación.");
+        }
+      } catch (e) {}
+    });
+  }
 
   /**
    * Muestra el dashboard y oculta otros contenedores.

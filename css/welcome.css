@@ -1,18 +1,43 @@
-/* Styles for the improved welcome section (moved from a standalone demo)
-   - gradient background
-   - floating bubbles
-   - glass container with logo and CTA
-   - loader animation that reveals the CTA
+/* Styles for the improved welcome section
+   Reorganized: variables -> layout/tags -> components -> keyframes -> responsive
 */
 
+/* -----------------------------
+   Variables
+   ----------------------------- */
 :root {
+  /* Background gradient stops */
   --welcome-bg-1: #6a11cb;
   --welcome-bg-2: #2575fc;
   --welcome-bg-3: #ff6f61;
+
+  /* Sizes */
+  --welcome-logo-size: 96px;
+  --welcome-logo-size-sm: 72px;
+  --welcome-loader-size: 49px;
+  --welcome-container-width: min(920px, 94%);
+  --welcome-container-padding: 36px;
+  --welcome-container-radius: 18px;
+
+  /* Timings */
+  --welcome-gradient-duration: 18s;
+  --welcome-bubble-duration: 20s;
+  --welcome-bounce-duration: 2s;
+  --welcome-spin-duration: 1s;
+
+  /* Visuals */
+  --welcome-bg-blur: 10px;
+  --welcome-bg-opacity: 0.08;
+  --welcome-border-opacity: 0.12;
+  --welcome-bubble-color: rgba(255, 255, 255, 0.12);
+  --welcome-color-white: rgba(255, 255, 255, 0.95);
 }
 
+/* -----------------------------
+   Base / layout (tags)
+   ----------------------------- */
 .welcome-section {
-  /* Cover the full viewport so welcome visual feels like a full page */
+  /* Cover the full viewport so the welcome feels like a full page */
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -29,20 +54,8 @@
     var(--welcome-bg-3)
   );
   background-size: 600% 600%;
-  animation: welcomeGradient 18s ease infinite;
-  color: #fff;
-}
-
-@keyframes welcomeGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  animation: welcomeGradient var(--welcome-gradient-duration) ease infinite;
+  color: var(--welcome-color-white);
 }
 
 .welcome-bubbles {
@@ -50,25 +63,75 @@
   inset: 0;
   pointer-events: none;
 }
+
+.welcome-container {
+  position: relative;
+  z-index: 10;
+  width: var(--welcome-container-width);
+  padding: var(--welcome-container-padding);
+  border-radius: var(--welcome-container-radius);
+  backdrop-filter: blur(var(--welcome-bg-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--welcome-bg-blur)) saturate(150%);
+  background-color: rgba(255, 255, 255, var(--welcome-bg-opacity));
+  border: 1px solid rgba(255, 255, 255, var(--welcome-border-opacity));
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* -----------------------------
+   Components / elements
+   ----------------------------- */
+/* Logo container + image */
+.welcome-logo {
+  width: var(--welcome-logo-size);
+  margin: 0 auto 18px;
+  display: block;
+}
+.welcome-logo-img,
+.welcome-logo img {
+  width: var(--welcome-logo-size);
+  display: block;
+  margin: 0 auto 18px;
+  animation: welcomeBounce var(--welcome-bounce-duration) infinite;
+}
+
+/* Title / subtitle */
+.welcome-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  animation: slideIn 2s ease forwards;
+}
+.welcome-sub {
+  color: var(--welcome-color-white);
+  font-size: 1.2rem;
+  opacity: 0;
+  margin-bottom: 20px;
+  animation: fadeText 3s ease forwards;
+  animation-delay: 1s;
+}
+
+/* Loader ring */
+.welcome-loader {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+.loader-ring {
+  width: var(--welcome-loader-size);
+  height: var(--welcome-loader-size);
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.18);
+  border-top-color: var(--welcome-color-white);
+  animation: spin var(--welcome-spin-duration) linear infinite;
+}
+
+/* Quick decorative bubbles (individual sizes are set below) */
 .welcome-bubbles .bubble {
   position: absolute;
   bottom: -150px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--welcome-bubble-color);
   border-radius: 50%;
-  animation: rise 20s linear infinite;
-}
-@keyframes rise {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(-110vh) scale(1.5);
-    opacity: 0;
-  }
+  animation: rise var(--welcome-bubble-duration) linear infinite;
 }
 .welcome-bubbles .bubble:nth-child(1) {
   width: 40px;
@@ -112,32 +175,62 @@
   animation-delay: 4s;
 }
 
-.welcome-container {
-  position: relative;
-  z-index: 10;
-  width: min(920px, 94%);
-  padding: 36px;
-  border-radius: 18px;
-  backdrop-filter: blur(10px) saturate(150%);
-  -webkit-backdrop-filter: blur(10px) saturate(150%);
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+/* CTA: hidden until loader completes */
+.welcome-cta {
+  margin-top: 8px;
+}
+.welcome-cta button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--welcome-color-white);
+  background: transparent;
+  border: 2px solid var(--welcome-color-white);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: none; /* hidden while loader is active */
+  opacity: 0;
+  transform: scale(0.8);
+  margin-bottom: 6.5px;
+  margin-top: 1px;
+}
+.welcome-cta button.show {
+  animation: showButton 1s ease forwards;
+  animation-delay: 0.3s;
+  display: inline-flex;
 }
 
-.welcome-logo {
-  width: 96px;
-  margin: 0 auto 18px;
-  display: block;
+/* -----------------------------
+   Keyframes
+   (grouped here to keep declarations tidy)
+   ----------------------------- */
+@keyframes welcomeGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
-.welcome-logo-img,
-.welcome-logo img {
-  width: 96px;
-  display: block;
-  margin: 0 auto 18px;
-  animation: welcomeBounce 2s infinite;
+
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.5);
+    opacity: 0;
+  }
 }
+
 @keyframes welcomeBounce {
   0%,
   20%,
@@ -154,11 +247,6 @@
   }
 }
 
-.welcome-title {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  animation: slideIn 2s ease forwards;
-}
 @keyframes slideIn {
   from {
     transform: translateY(-50px);
@@ -169,14 +257,7 @@
     opacity: 1;
   }
 }
-.welcome-sub {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 1.2rem;
-  opacity: 0;
-  margin-bottom: 20px;
-  animation: fadeText 3s ease forwards;
-  animation-delay: 1s;
-}
+
 @keyframes fadeText {
   from {
     opacity: 0;
@@ -185,20 +266,6 @@
     opacity: 1;
   }
 }
-/* Loader ring */
-.welcome-loader {
-  margin: 12px auto 18px;
-  display: flex;
-  justify-content: center;
-}
-.loader-ring {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 6px solid rgba(255, 255, 255, 0.18);
-  border-top-color: rgba(255, 255, 255, 0.95);
-  animation: spin 1s linear infinite;
-}
 
 @keyframes spin {
   100% {
@@ -206,39 +273,35 @@
   }
 }
 
-/* CTA initial hidden until loader completes */
-.welcome-cta {
-  margin-top: 8px;
-}
-.welcome-cta button {
-  padding: 12px 30px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #fff;
-  background: transparent;
-  border: 2px solid white;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  /* Not present (display:none) while loader is active */
-  display: none;
-  opacity: 0;
-  transform: scale(0.8);
-}
-.welcome-cta button:hover {
-  background: white;
-  color: #2575fc;
-  transform: scale(1.1);
-  box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.7);
-}
-.welcome-cta button.show {
-  /* Make it present and animate in */
-  display: inline-flex;
-  opacity: 1;
-  transform: scale(1);
+@keyframes showButton {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Mobile tweaks */
+/* -----------------------------
+   Comportamiento Hover/Active para los botones
+   ----------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .welcome-cta button:hover {
+    background: var(--welcome-color-white);
+    color: #2575fc;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  }
+}
+@media (hover: none) and (pointer: coarse), (max-width: 640px) {
+  .welcome-cta button:active {
+    background: var(--welcome-color-white);
+    color: #2575fc;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  }
+}
+/* -----------------------------
+   Responsive (last)
+   ----------------------------- */
 @media (max-width: 640px) {
   .welcome-container {
     padding: 20px;
@@ -247,6 +310,10 @@
     font-size: 1.6rem;
   }
   .welcome-logo {
-    width: 72px;
+    width: var(--welcome-logo-size-sm);
+  }
+  .welcome-logo-img,
+  .welcome-logo img {
+    width: var(--welcome-logo-size-sm);
   }
 }
