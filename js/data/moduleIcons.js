@@ -50,6 +50,9 @@
     `,
     avatar_user: `
       <img src="assets/icons/icon-chat-user.svg" alt="User avatar" class="chat-avatar-img" />
+    `, // Logo usado en la pantalla de bienvenida
+    welcome_logo: `
+      <img src="assets/icons/icon-chat-bot.svg" alt="Mascota" class="welcome-logo-img" />
     `,
   };
 })(window.App);

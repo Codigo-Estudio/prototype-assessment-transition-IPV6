@@ -1,0 +1,252 @@
+/* Styles for the improved welcome section (moved from a standalone demo)
+   - gradient background
+   - floating bubbles
+   - glass container with logo and CTA
+   - loader animation that reveals the CTA
+*/
+
+:root {
+  --welcome-bg-1: #6a11cb;
+  --welcome-bg-2: #2575fc;
+  --welcome-bg-3: #ff6f61;
+}
+
+.welcome-section {
+  /* Cover the full viewport so welcome visual feels like a full page */
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 100;
+  background: linear-gradient(
+    270deg,
+    var(--welcome-bg-1),
+    var(--welcome-bg-2),
+    var(--welcome-bg-3)
+  );
+  background-size: 600% 600%;
+  animation: welcomeGradient 18s ease infinite;
+  color: #fff;
+}
+
+@keyframes welcomeGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.welcome-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.welcome-bubbles .bubble {
+  position: absolute;
+  bottom: -150px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  animation: rise 20s linear infinite;
+}
+@keyframes rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.5);
+    opacity: 0;
+  }
+}
+.welcome-bubbles .bubble:nth-child(1) {
+  width: 40px;
+  height: 40px;
+  left: 20%;
+  animation-duration: 12s;
+}
+.welcome-bubbles .bubble:nth-child(2) {
+  width: 25px;
+  height: 25px;
+  left: 50%;
+  animation-duration: 8s;
+  animation-delay: 5s;
+}
+.welcome-bubbles .bubble:nth-child(3) {
+  width: 60px;
+  height: 60px;
+  left: 70%;
+  animation-duration: 10s;
+  animation-delay: 2s;
+}
+.welcome-bubbles .bubble:nth-child(4) {
+  width: 15px;
+  height: 15px;
+  left: 85%;
+  animation-duration: 7s;
+  animation-delay: 3s;
+}
+.welcome-bubbles .bubble:nth-child(5) {
+  width: 50px;
+  height: 50px;
+  left: 30%;
+  animation-duration: 11s;
+  animation-delay: 6s;
+}
+.welcome-bubbles .bubble:nth-child(6) {
+  width: 35px;
+  height: 35px;
+  left: 10%;
+  animation-duration: 8s;
+  animation-delay: 4s;
+}
+
+.welcome-container {
+  position: relative;
+  z-index: 10;
+  width: min(920px, 94%);
+  padding: 36px;
+  border-radius: 18px;
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.welcome-logo {
+  width: 96px;
+  margin: 0 auto 18px;
+  display: block;
+}
+.welcome-logo-img,
+.welcome-logo img {
+  width: 96px;
+  display: block;
+  margin: 0 auto 18px;
+  animation: welcomeBounce 2s infinite;
+}
+@keyframes welcomeBounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-18px);
+  }
+  60% {
+    transform: translateY(-8px);
+  }
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  animation: slideIn 2s ease forwards;
+}
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.welcome-sub {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.2rem;
+  opacity: 0;
+  margin-bottom: 20px;
+  animation: fadeText 3s ease forwards;
+  animation-delay: 1s;
+}
+@keyframes fadeText {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+/* Loader ring */
+.welcome-loader {
+  margin: 12px auto 18px;
+  display: flex;
+  justify-content: center;
+}
+.loader-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 6px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.95);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* CTA initial hidden until loader completes */
+.welcome-cta {
+  margin-top: 8px;
+}
+.welcome-cta button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background: transparent;
+  border: 2px solid white;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  /* Not present (display:none) while loader is active */
+  display: none;
+  opacity: 0;
+  transform: scale(0.8);
+}
+.welcome-cta button:hover {
+  background: white;
+  color: #2575fc;
+  transform: scale(1.1);
+  box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.7);
+}
+.welcome-cta button.show {
+  /* Make it present and animate in */
+  display: inline-flex;
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px) {
+  .welcome-container {
+    padding: 20px;
+  }
+  .welcome-title {
+    font-size: 1.6rem;
+  }
+  .welcome-logo {
+    width: 72px;
+  }
+}

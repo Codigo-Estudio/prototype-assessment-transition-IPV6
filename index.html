@@ -12,6 +12,7 @@
     <!-- CSS (orden: tokens / components / main / dashboard / chatbot) -->
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/welcome.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/chatbot.css" />
@@ -24,16 +25,32 @@
 
   <body>
     <div class="app-container">
-      <!-- Bienvenida -->
-      <section id="welcome" class="section">
-        <div class="welcome-card">
-          <h1>Bienvenido</h1>
-          <p class="muted">
-            Este sistema le ayudará a evaluar la madurez de su empresa en la
-            transición de IPv4 a IPv6.
+      <!-- Bienvenida mejorada -->
+      <section id="welcome" class="section welcome-section">
+        <!-- Burbujas decorativas -->
+        <div class="welcome-bubbles" aria-hidden="true">
+          <div class="bubble"></div>
+          <div class="bubble"></div>
+          <div class="bubble"></div>
+          <div class="bubble"></div>
+          <div class="bubble"></div>
+          <div class="bubble"></div>
+        </div>
+
+        <div class="welcome-container">
+          <div id="welcomeLogo" class="welcome-logo" aria-hidden="true"></div>
+          <h1 class="welcome-title">¡Bienvenido!</h1>
+          <p class="welcome-sub">
+            Este sistema le ayudara a evaluar su nivel de madurez en la
+            transición a IPv6.
           </p>
-          <div style="margin-top: 12px">
-            <button id="startSurvey" class="btn btn-primary">
+
+          <div class="welcome-loader" id="welcomeLoader" aria-hidden="false">
+            <div class="loader-ring"></div>
+          </div>
+
+          <div class="welcome-cta">
+            <button id="startSurvey" aria-label="Iniciar encuesta">
               Iniciar Encuesta
             </button>
           </div>
@@ -128,6 +145,7 @@
     <script src="js/ui/modalUI.js"></script>
     <script src="js/ui/messageModal.js"></script>
     <script src="js/ui/messageToast.js"></script>
+    <script src="js/ui/welcomeUI.js"></script>
     <!-- MAIN -->
     <script src="js/main.js"></script>
 
