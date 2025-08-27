@@ -187,13 +187,14 @@
   background: transparent;
   border: 2px solid var(--welcome-color-white);
   border-radius: 25px;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.3s ease;
   display: none; /* hidden while loader is active */
   opacity: 0;
   transform: scale(0.8);
   margin-bottom: 6.5px;
   margin-top: 1px;
+  -webkit-tap-highlight-color: transparent; /* quita el flash gris */
 }
 .welcome-cta button.show {
   animation: showButton 1s ease forwards;
@@ -291,14 +292,14 @@
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
   }
 }
-/*@media (hover: none) and (pointer: coarse), (max-width: 640px) {*/
-.welcome-cta button:active {
-  background: var(--welcome-color-white);
-  color: #2575fc;
-  transform: scale(1.1);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+@media (hover: none) and (pointer: coarse), (max-width: 640px) {
+  .welcome-cta button:active {
+    background: var(--welcome-color-white);
+    color: #2575fc;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  }
 }
-/*}/*
 /* -----------------------------
    Responsive (last)
    ----------------------------- */
