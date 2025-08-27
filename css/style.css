@@ -127,10 +127,6 @@ p {
 :focus {
   outline: none;
 }
-:focus-visible {
-  outline: 3px solid rgba(14, 165, 164, 0.12);
-  outline-offset: 2px;
-}
 
 /* Utilities for layout */
 .util-space-bottom {

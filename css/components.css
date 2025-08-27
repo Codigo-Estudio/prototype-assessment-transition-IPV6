@@ -46,8 +46,8 @@
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
 }
+/* Detecta dispositivos que usan mouse o puntero */
 @media (hover: hover) and (pointer: fine) {
-  /* Efectos hover solo para dispositivos que soportan hover (escritorio) */
   .btn-secondary:hover {
     background: var(--color-primary);
     color: var(--color-neutral-100);
@@ -57,8 +57,7 @@
     box-shadow: var(--shadow-hover);
   }
 }
-
-/* Táctil / responsivo: aplica el efecto en active (tocar/clic) para que no se quede pegado en dispositivos táctiles */
+/* Detecta dispositivos con pantallas táctiles */
 @media (hover: none) and (pointer: coarse), (max-width: 640px) {
   .btn-secondary:active {
     background: var(--color-primary);
