@@ -291,7 +291,7 @@
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
   }
 }
-@media (hover: none) and (pointer: coarse), (max-width: 640px) {
+@media (hover: none) and (pointer: coarse) {
   .welcome-cta button:active {
     background: var(--welcome-color-white);
     color: #2575fc;
