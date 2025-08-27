@@ -39,34 +39,21 @@
   transform: none;
   box-shadow: none;
 }
-
+.btn-primary {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
 /* Secondary */
 .btn-secondary {
   background: transparent;
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
 }
-/* Detecta dispositivos que usan mouse o puntero */
-@media (hover: hover) and (pointer: fine) {
-  .btn-secondary:hover {
-    background: var(--color-primary);
-    color: var(--color-neutral-100);
-  }
-  .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
-  }
-}
-/* Detecta dispositivos con pantallas táctiles */
-@media (hover: none) and (pointer: coarse), (max-width: 640px) {
-  .btn-secondary:active {
-    background: var(--color-primary);
-    color: var(--color-neutral-100);
-  }
-  .btn-primary:active {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
-  }
+
+.btn-secondary:hover,
+.btn-secondary:active {
+  background: var(--color-primary);
+  color: var(--color-neutral-100);
 }
 
 /* Danger */
@@ -256,3 +243,17 @@
     font-size: 14px;
   }
 }
+
+/* estilo reutilizable para estado táctil "pressed" 
+.pressable {
+  -webkit-tap-highlight-color: transparent;
+}
+.pressable.pressed,
+[data-pressable].pressed {
+  transform: translateY(1px) scale(0.995);
+  opacity: 0.95;
+  transition: transform 120ms ease, opacity 120ms ease;*/
+/* opcional: sombra reducida para efecto "presionado" 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  pointer-events: auto;
+}*/
