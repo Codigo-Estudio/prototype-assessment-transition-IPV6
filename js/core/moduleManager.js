@@ -79,7 +79,37 @@ window.App = window.App || {};
 
   // Devuelve el total de preguntas de un módulo
   App.moduleManager.getTotalQuestions = function (moduleId) {
-    return obtenerPreguntasModulo(moduleId).length;
+    // Calcular total dinámico: contar solo preguntas elegibles (no excluidas por dependencias)
+    const todas = obtenerPreguntasModulo(moduleId);
+    const store = leerAlmacenamiento();
+    const answers = store.answers || {};
+
+    let count = 0;
+    todas.forEach((q) => {
+      if (!q) return;
+      if (q.requires && Array.isArray(q.requires)) {
+        let excluded = false;
+        for (let i = 0; i < q.requires.length; i++) {
+          const r = q.requires[i];
+          if (!r || !r.questionId) continue;
+          const recorded =
+            answers[r.questionId] && answers[r.questionId].answer;
+          if (typeof recorded !== "undefined" && recorded !== null) {
+            if (
+              Array.isArray(r.answers) &&
+              r.answers.length &&
+              r.answers.indexOf(recorded) === -1
+            ) {
+              excluded = true;
+              break;
+            }
+          }
+        }
+        if (excluded) return;
+      }
+      count++;
+    });
+    return count;
   };
 
   // Calcula el progreso de un módulo (solo respondidas / total)
@@ -97,10 +127,73 @@ window.App = window.App || {};
     const answers = store.answers || {};
     const skipped = store.skipped || {};
 
+    // Mantener comportamiento previo: si hay preguntas marcadas como saltadas, devolver solo esas
     const saltadas = todas.filter((q) => skipped[q.id]);
     if (saltadas.length > 0) return saltadas.slice();
 
-    return todas.filter((q) => !answers[q.id]);
+    // Excluir preguntas cuya dependencia ya fue respondida con una respuesta incompatible
+    const excludedIds = new Set();
+    todas.forEach((q) => {
+      if (!q || !q.requires || !Array.isArray(q.requires)) return;
+      for (let i = 0; i < q.requires.length; i++) {
+        const r = q.requires[i];
+        if (!r || !r.questionId) continue;
+        const recorded = answers[r.questionId] && answers[r.questionId].answer;
+        if (typeof recorded !== "undefined" && recorded !== null) {
+          if (
+            Array.isArray(r.answers) &&
+            r.answers.length &&
+            r.answers.indexOf(recorded) === -1
+          ) {
+            excludedIds.add(q.id);
+            break;
+          }
+        }
+      }
+    });
+
+    // Devolver preguntas no respondidas y no excluidas
+    return todas.filter((q) => !answers[q.id] && !excludedIds.has(q.id));
+  }
+
+  // Verifica si una pregunta tiene dependencias (requires) y si estas están satisfechas
+  // returns { blocked: boolean, dependency: { questionId, answers } | null }
+  function verificarDependencias(question) {
+    if (!question || !question.requires || !Array.isArray(question.requires))
+      return { blocked: false, dependency: null };
+
+    const store = leerAlmacenamiento();
+    const answers = store.answers || {};
+
+    for (let i = 0; i < question.requires.length; i++) {
+      const r = question.requires[i];
+      if (!r || !r.questionId) continue;
+      const recorded = answers[r.questionId] && answers[r.questionId].answer;
+      // if not answered or answer not in allowed list -> blocked
+      if (
+        !recorded ||
+        (Array.isArray(r.answers) &&
+          r.answers.length &&
+          r.answers.indexOf(recorded) === -1)
+      ) {
+        return {
+          blocked: true,
+          dependency: { questionId: r.questionId, answers: r.answers || [] },
+        };
+      }
+    }
+
+    return { blocked: false, dependency: null };
+  }
+
+  // Devuelve un snippet legible (primeras N palabras) de la pregunta identificada por id
+  function getQuestionSnippet(questionId, wordCount = 8) {
+    if (!questionId || !Array.isArray(App.questions)) return questionId || "";
+    const q = App.questions.find((x) => x.id === questionId);
+    if (!q || !q.text) return questionId;
+    const words = q.text.trim().split(/\s+/);
+    const snippet = words.slice(0, wordCount).join(" ");
+    return `"${snippet}..."`;
   }
 
   // Inicia un módulo desde el dashboard
@@ -128,17 +221,74 @@ window.App = window.App || {};
     }
 
     const q = state.questionList[state.index];
+    // verificar dependencias antes de mostrar
+    const check = verificarDependencias(q);
+    if (check.blocked) {
+      try {
+        const depQId = check.dependency.questionId;
+        const snippet = getQuestionSnippet(depQId, 8);
+        const sourceModule =
+          (App.questions.find((x) => x.id === depQId) || {}).module || "";
+        const sourceTitle = getModuleTitle(sourceModule);
+        const currentTitle = getModuleTitle(moduleId);
+        const title = "¡Ups!";
+        const body = `Para continuar con el módulo **${currentTitle}** primero debe responder la pregunta **${snippet}** del módulo **${sourceTitle}**`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: title,
+            body: body,
+            opacity: 0.6,
+          });
+        } else {
+          alert(
+            `Para continuar con el módulo ${currentTitle} primero debe responder la pregunta **${snippet}** del módulo ${sourceTitle}`
+          );
+        }
+      } catch (e) {}
+      // redirigir al dashboard
+      App.ui.showDashboard && App.ui.showDashboard();
+      return;
+    }
+
     App.chatbot.loadQuestion(q, calcularProgresoModal());
   };
 
   // Calcula el porcentaje de progreso del modal (solo respondidas)
   function calcularProgresoModal() {
-    const total = state.totalForModule || 1;
     const store = leerAlmacenamiento();
     const answers = store.answers || {};
-    const respondidas = obtenerPreguntasModulo(state.currentModuleId).filter(
-      (q) => answers[q.id]
-    ).length;
+    const todas = obtenerPreguntasModulo(state.currentModuleId);
+
+    // construir lista de preguntas elegibles
+    const elegibles = todas.filter((q) => {
+      if (!q) return false;
+      if (q.requires && Array.isArray(q.requires)) {
+        for (let i = 0; i < q.requires.length; i++) {
+          const r = q.requires[i];
+          if (!r || !r.questionId) continue;
+          const recorded =
+            answers[r.questionId] && answers[r.questionId].answer;
+          if (typeof recorded !== "undefined" && recorded !== null) {
+            if (
+              Array.isArray(r.answers) &&
+              r.answers.length &&
+              r.answers.indexOf(recorded) === -1
+            ) {
+              return false; // excluida
+            }
+          }
+        }
+      }
+      return true;
+    });
+
+    const total = elegibles.length || 1;
+    const respondidas = elegibles.filter((q) => answers[q.id]).length;
     return Math.round((respondidas / total) * 100);
   }
 
@@ -169,10 +319,71 @@ window.App = window.App || {};
       return;
     }
 
-    App.chatbot.loadQuestion(
-      state.questionList[state.index],
-      calcularProgresoModal()
-    );
+    // Avanzar hasta encontrar la siguiente pregunta elegible. Si la dependencia está
+    // no respondida -> bloquear y mostrar modal; si la dependencia fue respondida
+    // con una respuesta incompatible -> omitir la pregunta silenciosamente.
+    while (state.index < state.questionList.length) {
+      const nextQ = state.questionList[state.index];
+      const check = verificarDependencias(nextQ);
+      if (!check.blocked) {
+        App.chatbot.loadQuestion(nextQ, calcularProgresoModal());
+        return;
+      }
+
+      // check.blocked === true
+      try {
+        const dep = check.dependency;
+        const depQId = dep && dep.questionId;
+        const store = leerAlmacenamiento();
+        const recorded =
+          store.answers &&
+          store.answers[depQId] &&
+          store.answers[depQId].answer;
+
+        // Si la dependencia fue respondida pero con una respuesta NO permitida -> omitir esta pregunta
+        if (
+          typeof recorded !== "undefined" &&
+          recorded !== null &&
+          Array.isArray(dep.answers) &&
+          dep.answers.length &&
+          dep.answers.indexOf(recorded) === -1
+        ) {
+          // omitir y continuar al siguiente
+          state.index++;
+          continue;
+        }
+
+        // Si la dependencia NO fue respondida -> bloquear mostrando modal
+        const snippet = getQuestionSnippet(depQId, 8);
+        const sourceModule =
+          (App.questions.find((x) => x.id === depQId) || {}).module || "";
+        const sourceTitle = getModuleTitle(sourceModule);
+        const currentTitle = getModuleTitle(state.currentModuleId);
+        const title = "¡Ups!";
+        const body = `Para continuar con el módulo **${currentTitle}** primero debe responder la pregunta **${snippet}** del módulo **${sourceTitle}**`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: title,
+            body: body,
+            opacity: 0.6,
+          });
+        } else {
+          alert(
+            `Para continuar con el módulo ${currentTitle} primero debe responder la pregunta **${snippet}** del módulo ${sourceTitle}`
+          );
+        }
+      } catch (e) {}
+      App.ui.showDashboard && App.ui.showDashboard();
+      return;
+    }
+
+    // Si salimos del while, no quedan preguntas
+    finalizarYCerrarModulo();
   };
 
   // Marca la pregunta como saltada y pasa a la siguiente
@@ -195,15 +406,67 @@ window.App = window.App || {};
     }
 
     state.index++;
-    if (state.index >= state.questionList.length) {
-      finalizarYCerrarModulo();
+    // Avanzar hasta encontrar la siguiente pregunta elegible igual que en answerCurrent
+    while (state.index < state.questionList.length) {
+      const nextQ = state.questionList[state.index];
+      const check = verificarDependencias(nextQ);
+      if (!check.blocked) {
+        App.chatbot.loadQuestion(nextQ, calcularProgresoModal());
+        return;
+      }
+
+      try {
+        const dep = check.dependency;
+        const depQId = dep && dep.questionId;
+        const store = leerAlmacenamiento();
+        const recorded =
+          store.answers &&
+          store.answers[depQId] &&
+          store.answers[depQId].answer;
+
+        // Si la dependencia fue respondida pero con una respuesta NO permitida -> omitir esta pregunta
+        if (
+          typeof recorded !== "undefined" &&
+          recorded !== null &&
+          Array.isArray(dep.answers) &&
+          dep.answers.length &&
+          dep.answers.indexOf(recorded) === -1
+        ) {
+          state.index++;
+          continue;
+        }
+
+        // Si la dependencia NO fue respondida -> bloquear mostrando modal
+        const snippet = getQuestionSnippet(depQId, 8);
+        const sourceModule =
+          (App.questions.find((x) => x.id === depQId) || {}).module || "";
+        const sourceTitle = getModuleTitle(sourceModule);
+        const currentTitle = getModuleTitle(state.currentModuleId);
+        const title = "¡Ups!";
+        const body = `Para continuar con el módulo **${currentTitle}** primero debe responder la pregunta **${snippet}** del módulo **${sourceTitle}**`;
+        if (
+          App.ui &&
+          App.ui.messageModal &&
+          typeof App.ui.messageModal.show === "function"
+        ) {
+          App.ui.messageModal.show({
+            iconKey: "avatar_bot",
+            title: title,
+            body: body,
+            opacity: 0.6,
+          });
+        } else {
+          alert(
+            `Para continuar con el módulo ${currentTitle} primero debe responder la pregunta **${snippet}** del módulo ${sourceTitle}`
+          );
+        }
+      } catch (e) {}
+      App.ui.showDashboard && App.ui.showDashboard();
       return;
     }
 
-    App.chatbot.loadQuestion(
-      state.questionList[state.index],
-      calcularProgresoModal()
-    );
+    // Si no quedan preguntas
+    finalizarYCerrarModulo();
   };
 
   // Finaliza la sesión y cierra el modal
@@ -224,7 +487,7 @@ window.App = window.App || {};
           Array.isArray(App.modules) && App.modules.find((m) => m.id === mid)
             ? App.modules.find((m) => m.id === mid).title
             : mid;
-        const body = `Haz logrado completar con satisfacción el modulo **${moduleName}**.`;
+        const body = `Has logrado completar con satisfacción el modulo **${moduleName}**.`;
         if (
           App.ui &&
           App.ui.messageModal &&

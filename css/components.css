@@ -59,7 +59,7 @@
 }
 
 /* Táctil / responsivo: aplica el efecto en active (tocar/clic) para que no se quede pegado en dispositivos táctiles */
-@media (hover: none) and (pointer: coarse), (max-width: 640px) {
+@media (hover: none) and (pointer: coarse) {
   .btn-secondary:active {
     background: var(--color-primary);
     color: var(--color-neutral-100);

@@ -100,6 +100,17 @@ window.App = window.App || {};
         });
       } catch (e) {}
 
+      // Limpiar UI del chatbot inmediatamente para que no se vea historial residual
+      try {
+        if (
+          window.App &&
+          App.chatbot &&
+          typeof App.chatbot.clearHistoryUI === "function"
+        ) {
+          App.chatbot.clearHistoryUI();
+        }
+      } catch (e) {}
+
       // Refresh dashboard and modules
       try {
         if (
