@@ -100,17 +100,6 @@ window.App = window.App || {};
         });
       } catch (e) {}
 
-      // Limpiar UI del chatbot inmediatamente para que no se vea historial residual
-      try {
-        if (
-          window.App &&
-          App.chatbot &&
-          typeof App.chatbot.clearHistoryUI === "function"
-        ) {
-          App.chatbot.clearHistoryUI();
-        }
-      } catch (e) {}
-
       // Refresh dashboard and modules
       try {
         if (
@@ -129,6 +118,18 @@ window.App = window.App || {};
             seenCount: 0,
             totalForModule: 0,
           };
+        }
+        // Limpiar historial visual del chat
+        if (App.chatbot) {
+          // Vaciar contenedor de conversación
+          var convoEl = document.getElementById("chatConversation");
+          if (convoEl) convoEl.innerHTML = "";
+          // Reiniciar estado interno
+          App.chatbot._currentModuleId = null;
+          App.chatbot._currentQuestionId = null;
+          if (typeof App.chatbot._loadHistory === "function") {
+            App.chatbot._loadHistory(null);
+          }
         }
       } catch (e) {}
 
