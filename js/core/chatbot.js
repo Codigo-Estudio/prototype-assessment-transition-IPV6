@@ -79,43 +79,6 @@ window.App = window.App || {};
     }
   };
 
-  // Limpia el historial visual y estado interno del chatbot para un módulo o todos
-  App.chatbot.clearHistoryUI = function (moduleId) {
-    try {
-      // limpiar DOM del contenedor conversacional si existe
-      if (convoEl) convoEl.innerHTML = "";
-
-      // reset estado interno
-      App.chatbot._currentModuleId = null;
-      App.chatbot._currentQuestionId = null;
-
-      // si se indica moduleId, borrar su clave; si no, borrar todas las chat_history_*
-      try {
-        if (moduleId) {
-          localStorage.removeItem(App.chatbot._historyKey(moduleId));
-        } else {
-          Object.keys(localStorage).forEach((k) => {
-            if (k && k.indexOf(App.chatbot._historyPrefix) === 0)
-              localStorage.removeItem(k);
-          });
-        }
-      } catch (e) {
-        // noop
-      }
-    } catch (e) {
-      console.warn("chatbot: clearHistoryUI fallo", e);
-    }
-  };
-
-  // Conveniencia: recargar el historial visual para un módulo (usa la función interna)
-  App.chatbot.reloadHistoryForModule = function (moduleId) {
-    try {
-      App.chatbot._loadHistory(moduleId);
-    } catch (e) {
-      // noop
-    }
-  };
-
   // Marca en el historial del módulo que las quick replies del último mensaje del bot
   // fueron ocultadas/consumidas, para que al recargar la conversación no vuelvan a aparecer.
   App.chatbot._markQuickRepliesHidden = function (
