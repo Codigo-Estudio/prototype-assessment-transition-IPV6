@@ -43,12 +43,27 @@ App.ui = App.ui || {};
     reportEl.appendChild(header);
 
     // Sección 1: Puntaje general
-    const respuestas = App.storage.getAnswers ? App.storage.getAnswers() : {};
+    // Usar respuestas guardadas por id de pregunta desde moduleManager
+    let respuestas = {};
+    if (
+      window.App &&
+      App.moduleManager &&
+      typeof App.moduleManager._state === "object"
+    ) {
+      // Leer del almacenamiento real
+      const store =
+        typeof App.moduleManager.leerAlmacenamiento === "function"
+          ? App.moduleManager.leerAlmacenamiento()
+          : window.localStorage
+          ? JSON.parse(localStorage.getItem("ipv6_survey_v1") || "{}")
+          : {};
+      respuestas = store.answers || {};
+    }
     const generalScore = App.utils.calcularPorcentajeMadurezGeneral(respuestas);
     let generalTip = App.tipsGeneral[0].texto;
-    if (generalScore >= 80)
+    if (generalScore >= 60)
       generalTip = App.tipsGeneral.find((t) => t.id === "general_alto").texto;
-    else if (generalScore >= 50)
+    else if (generalScore >= 30)
       generalTip = App.tipsGeneral.find((t) => t.id === "general_medio").texto;
     else
       generalTip = App.tipsGeneral.find((t) => t.id === "general_bajo").texto;
@@ -104,8 +119,8 @@ App.ui = App.ui || {};
         respuestas
       );
       let nivel = "bajo";
-      if (score >= 80) nivel = "alto";
-      else if (score >= 50) nivel = "medio";
+      if (score >= 60) nivel = "alto";
+      else if (score >= 30) nivel = "medio";
       const tipObj = App.tipsModulo.find(
         (t) => t.modulo === modId && t.id.endsWith(nivel)
       );

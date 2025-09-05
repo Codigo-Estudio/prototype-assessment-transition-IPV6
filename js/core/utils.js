@@ -175,7 +175,30 @@ window.App = window.App || {};
     );
     if (preguntasModulo.length === 0) return 0;
     const sumaScores = preguntasModulo.reduce((acc, pregunta) => {
-      const score = respuestas[pregunta.id] ?? 0;
+      // respuestas[pregunta.id] puede ser un objeto { answer, ts }
+      const respuesta = respuestas[pregunta.id];
+      let score = 0;
+      if (
+        respuesta &&
+        typeof respuesta === "object" &&
+        respuesta.answer !== undefined
+      ) {
+        // Si la respuesta es un objeto, puede ser el objeto de la opción seleccionada o solo el score
+        if (
+          typeof respuesta.answer === "object" &&
+          respuesta.answer.score !== undefined
+        ) {
+          score = respuesta.answer.score;
+        } else if (typeof respuesta.answer === "number") {
+          score = respuesta.answer;
+        } else if (typeof respuesta.answer === "string") {
+          // Buscar el score en las opciones de la pregunta
+          const opt = pregunta.options.find((o) => o.text === respuesta.answer);
+          score = opt ? opt.score : 0;
+        }
+      } else if (typeof respuesta === "number") {
+        score = respuesta;
+      }
       return acc + score;
     }, 0);
     return (sumaScores / preguntasModulo.length) * 100;
