@@ -167,11 +167,7 @@ App.ui = App.ui || {};
     downloadBtn.innerHTML = "Descargar";
     downloadBtn.title = "Descargar informe";
     downloadBtn.onclick = function () {
-      if (App.pdfExport && typeof App.pdfExport.exportReport === "function") {
-        App.pdfExport.exportReport(reportEl);
-      } else {
-        window.print();
-      }
+      App.utils.exportElementToPDF(reportEl, "informe-madurez-ipv6.pdf");
     };
     btnWrap.appendChild(downloadBtn);
     reportEl.appendChild(btnWrap);
