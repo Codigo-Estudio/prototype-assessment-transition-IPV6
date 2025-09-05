@@ -11,7 +11,9 @@ window.App = window.App || {};
 
   const dashboardContainer = document.getElementById("dashboard");
   const cardsContainer = document.getElementById("dashboardCards");
-  const exportButton = document.getElementById("exportPdf");
+  // No mantener referencia fija al botón de resultados para evitar problemas tras clonados
+  // Usaremos query dinámica dentro de updateExportButton()
+  const exportButton = document.getElementById("btnResultados");
   const resetButton = document.getElementById("resetSurvey");
 
   /**
@@ -48,18 +50,21 @@ window.App = window.App || {};
   }
 
   /**
-   * Actualiza el estado del botón de exportar PDF.
+   * Actualiza el estado del botón de Ver resultados.
    */
   function updateExportButton() {
+    const btn = document.getElementById("btnResultados");
+    if (!btn) return;
     const allComplete = App.dashboard.allModulesComplete();
-    if (exportButton) {
-      exportButton.disabled = !allComplete;
-      exportButton.addEventListener("click", () => {
-        if (allComplete) {
-          App.pdfExport.generateReport();
-        }
-      });
-    }
+    btn.disabled = !allComplete;
+    if (allComplete) btn.removeAttribute("aria-disabled");
+    else btn.setAttribute("aria-disabled", "true");
+    // Reemplazar cualquier handler previo asignando onclick directamente
+    btn.onclick = function () {
+      if (App.dashboard.allModulesComplete() && App.ui.showReport) {
+        App.ui.showReport();
+      }
+    };
   }
 
   /**

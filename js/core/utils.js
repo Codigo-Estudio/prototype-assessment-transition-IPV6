@@ -162,4 +162,36 @@ window.App = window.App || {};
   App.utils.log = function (...args) {
     if (App.utils._debug) console.log("[App.utils]", ...args);
   };
+
+  /**
+   * Calcula el porcentaje de madurez de un módulo.
+   * @param {string} moduleId - ID del módulo (ej: "mod_datos_basicos")
+   * @param {Object} respuestas - Objeto { preguntaId: scoreSeleccionado }
+   * @returns {number} Porcentaje de madurez (0-100)
+   */
+  App.utils.calcularPorcentajeMadurezModulo = function (moduleId, respuestas) {
+    const preguntasModulo = window.App.questions.filter(
+      (q) => q.module === moduleId
+    );
+    if (preguntasModulo.length === 0) return 0;
+    const sumaScores = preguntasModulo.reduce((acc, pregunta) => {
+      const score = respuestas[pregunta.id] ?? 0;
+      return acc + score;
+    }, 0);
+    return (sumaScores / preguntasModulo.length) * 100;
+  };
+
+  /**
+   * Calcula el porcentaje de madurez general.
+   * @param {Object} respuestas - Objeto { preguntaId: scoreSeleccionado }
+   * @returns {number} Porcentaje de madurez general (0-100)
+   */
+  App.utils.calcularPorcentajeMadurezGeneral = function (respuestas) {
+    const modulos = [...new Set(window.App.questions.map((q) => q.module))];
+    const porcentajes = modulos.map((modulo) =>
+      App.utils.calcularPorcentajeMadurezModulo(modulo, respuestas)
+    );
+    if (porcentajes.length === 0) return 0;
+    return porcentajes.reduce((acc, val) => acc + val, 0) / porcentajes.length;
+  };
 })(window.App);
