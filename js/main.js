@@ -46,5 +46,16 @@ window.App = window.App || {};
   }
 
   // Esperar que el DOM esté listo
-  document.addEventListener("DOMContentLoaded", initApp);
+  document.addEventListener("DOMContentLoaded", function () {
+    initApp();
+    // Listener para mostrar el informe dinámico
+    const resultadosBtn = document.getElementById("btnResultados");
+    if (resultadosBtn) {
+      resultadosBtn.addEventListener("click", function () {
+        if (App.ui.showReport) {
+          App.ui.showReport();
+        }
+      });
+    }
+  });
 })(window.App);

@@ -162,4 +162,121 @@ window.App = window.App || {};
   App.utils.log = function (...args) {
     if (App.utils._debug) console.log("[App.utils]", ...args);
   };
+
+  /**
+   * Calcula el porcentaje de madurez de un módulo.
+   * @param {string} moduleId - ID del módulo (ej: "mod_datos_basicos")
+   * @param {Object} respuestas - Objeto { preguntaId: scoreSeleccionado }
+   * @returns {number} Porcentaje de madurez (0-100)
+   */
+  App.utils.calcularPorcentajeMadurezModulo = function (moduleId, respuestas) {
+    const preguntasModulo = window.App.questions.filter(
+      (q) => q.module === moduleId
+    );
+    if (preguntasModulo.length === 0) return 0;
+    const sumaScores = preguntasModulo.reduce((acc, pregunta) => {
+      // respuestas[pregunta.id] puede ser un objeto { answer, ts }
+      const respuesta = respuestas[pregunta.id];
+      let score = 0;
+      if (
+        respuesta &&
+        typeof respuesta === "object" &&
+        respuesta.answer !== undefined
+      ) {
+        // Si la respuesta es un objeto, puede ser el objeto de la opción seleccionada o solo el score
+        if (
+          typeof respuesta.answer === "object" &&
+          respuesta.answer.score !== undefined
+        ) {
+          score = respuesta.answer.score;
+        } else if (typeof respuesta.answer === "number") {
+          score = respuesta.answer;
+        } else if (typeof respuesta.answer === "string") {
+          // Buscar el score en las opciones de la pregunta
+          const opt = pregunta.options.find((o) => o.text === respuesta.answer);
+          score = opt ? opt.score : 0;
+        }
+      } else if (typeof respuesta === "number") {
+        score = respuesta;
+      }
+      return acc + score;
+    }, 0);
+    return (sumaScores / preguntasModulo.length) * 100;
+  };
+
+  /**
+   * Calcula el porcentaje de madurez general.
+   * @param {Object} respuestas - Objeto { preguntaId: scoreSeleccionado }
+   * @returns {number} Porcentaje de madurez general (0-100)
+   */
+  App.utils.calcularPorcentajeMadurezGeneral = function (respuestas) {
+    const modulos = [...new Set(window.App.questions.map((q) => q.module))];
+    const porcentajes = modulos.map((modulo) =>
+      App.utils.calcularPorcentajeMadurezModulo(modulo, respuestas)
+    );
+    if (porcentajes.length === 0) return 0;
+    return porcentajes.reduce((acc, val) => acc + val, 0) / porcentajes.length;
+  };
+
+  /**
+   * Exporta un elemento HTML como PDF usando html2canvas y jsPDF
+   * @param {HTMLElement} el - Elemento a exportar
+   * @param {string} filename - Nombre del archivo PDF
+   */
+  App.utils.exportElementToPDF = function (el, filename = "reporte.pdf") {
+    if (!el || !window.html2canvas) return;
+    window.html2canvas(el, { scale: 2, useCORS: true }).then(function (canvas) {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new window.jspdf.jsPDF({
+        orientation: "portrait",
+        unit: "pt",
+        format: "a4",
+      });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 40;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let position = 20;
+      let remainingHeight = imgHeight;
+      if (imgHeight <= pageHeight - 40) {
+        pdf.addImage(imgData, "PNG", 20, position, imgWidth, imgHeight);
+      } else {
+        const pageImgHeight = pageHeight - 40;
+        let pageNum = 0;
+        while (remainingHeight > 0) {
+          const sourceY =
+            (canvas.height * (pageNum * pageImgHeight)) / imgHeight;
+          const sourceHeight = (canvas.height * pageImgHeight) / imgHeight;
+          const pageCanvas = document.createElement("canvas");
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = sourceHeight;
+          const ctx = pageCanvas.getContext("2d");
+          ctx.drawImage(
+            canvas,
+            0,
+            sourceY,
+            canvas.width,
+            sourceHeight,
+            0,
+            0,
+            canvas.width,
+            sourceHeight
+          );
+          const pageImgData = pageCanvas.toDataURL("image/png");
+          pdf.addImage(
+            pageImgData,
+            "PNG",
+            20,
+            position,
+            imgWidth,
+            pageImgHeight
+          );
+          remainingHeight -= pageImgHeight;
+          pageNum++;
+          if (remainingHeight > 0) pdf.addPage();
+        }
+      }
+      pdf.save(filename);
+    });
+  };
 })(window.App);

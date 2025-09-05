@@ -16,9 +16,12 @@
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <link rel="stylesheet" href="css/chatbot.css" />
+    <link rel="stylesheet" href="css/report.css" />
 
     <!-- Librería jsPDF (necesaria para export PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Librería html2canvas (necesaria para export PDF con estilos) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <title>Transición IPv4 a IPv6</title>
   </head>
@@ -68,10 +71,10 @@
         <!-- Grid de cards -->
         <div id="dashboardCards"></div>
 
-        <!-- Controles (Exportar PDF) -->
+        <!-- Controles (Ver resultados) -->
         <div class="controls-row">
-          <button id="exportPdf" class="btn btn-primary" disabled>
-            Exportar PDF
+          <button id="btnResultados" class="btn btn-primary" disabled>
+            Ver resultados
           </button>
           <button id="resetSurvey" class="btn btn-primary">
             Iniciar nueva evaluación
@@ -84,7 +87,7 @@
         <h2>Encuesta finalizada</h2>
         <p class="muted">
           Gracias por participar. Puedes descargar el reporte desde el botón
-          'Exportar PDF'.
+          'Ver resultados'.
         </p>
       </section>
     </div>
@@ -136,6 +139,7 @@
     <script src="js/data/questions.js"></script>
     <script src="js/data/moduleIcons.js"></script>
     <script src="js/data/modules.js"></script>
+    <script src="js/data/tipsPhrases.js"></script>
     <script src="js/core/inactivity.js"></script>
     <script src="js/core/pdfExport.js"></script>
     <script src="js/core/moduleManager.js"></script>
@@ -149,6 +153,7 @@
     <script src="js/ui/messageModal.js"></script>
     <script src="js/ui/messageToast.js"></script>
     <script src="js/ui/welcomeUI.js"></script>
+    <script src="js/ui/reportUI.js"></script>
     <!-- MAIN -->
     <script src="js/main.js"></script>
 

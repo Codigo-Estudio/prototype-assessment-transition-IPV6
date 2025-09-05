@@ -580,7 +580,8 @@ window.App = window.App || {};
       opts.quickReplies.forEach((r) => {
         const b = document.createElement("button");
         b.type = "button";
-        b.textContent = r;
+        // Si r es un objeto, mostrar r.text; si es string, mostrarlo tal cual
+        b.textContent = typeof r === "object" && r !== null ? r.text : r;
         b.addEventListener("click", () => {
           // Desactivar y ocultar quick replies para esta burbuja inmediatamente
           try {
@@ -602,7 +603,9 @@ window.App = window.App || {};
           }
 
           // Mostrar la respuesta del usuario en la conversación
-          App.chatbot._pushUserMessage(r);
+          App.chatbot._pushUserMessage(
+            typeof r === "object" && r !== null ? r.text : r
+          );
 
           // delegar a moduleManager después de pequeña pausa para quick replies normales
           App.chatbot._schedule(() => App.moduleManager.answerCurrent(r), 250);
