@@ -28,6 +28,28 @@ window.App = window.App || {};
     renderCards();
     updateExportButton();
     attachResetHandler();
+
+    // Botón Enviar resultados
+    const enviarBtn = document.getElementById("btnEnviarResultados");
+    if (enviarBtn) {
+      enviarBtn.onclick = function () {
+        App.ui.emailModal.show({
+          title:
+            "Ingresa el email a donde se enviarán los resultados de la evaluación",
+          onSend: function (email) {
+            App.ui.messageModal.show({
+              iconKey: "avatar_bot",
+              title: "¡Enviado!",
+              body: "Los resultados de la evaluación han sido enviados con éxito.",
+              opacity: 0.6,
+              onClose: null,
+              buttonText: "Entendido",
+            });
+          },
+          onClose: null,
+        });
+      };
+    }
   };
 
   /**
@@ -114,6 +136,7 @@ window.App = window.App || {};
    */
   function updateExportButton() {
     const btn = document.getElementById("btnResultados");
+    const enviarBtn = document.getElementById("btnEnviarResultados");
     if (!btn) return;
     const allComplete = App.dashboard.allModulesComplete();
     btn.disabled = !allComplete;
@@ -125,6 +148,12 @@ window.App = window.App || {};
         App.ui.showReport();
       }
     };
+    // Sincronizar estado de habilitación del botón Enviar resultados
+    if (enviarBtn) {
+      enviarBtn.disabled = !allComplete;
+      if (allComplete) enviarBtn.removeAttribute("aria-disabled");
+      else enviarBtn.setAttribute("aria-disabled", "true");
+    }
   }
 
   /**
