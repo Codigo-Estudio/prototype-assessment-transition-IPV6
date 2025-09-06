@@ -1,7 +1,13 @@
 /* css/dashboard.css
    Dashboard: module cards, grid responsive y elementos específicos
 */
-
+/* Estilo para módulos inhabilitados */
+.modulo-inhabilitado {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(1);
+  border: 2px dashed #bbb;
+}
 /* Module card */
 .dashboard-card {
   background: var(--color-neutral-200);
@@ -91,15 +97,33 @@
   top: 12px;
 }
 
-/* Grid responsive: mobile -> tablet -> desktop */
-@media (min-width: 640px) {
-  #dashboardCards {
+/* Mejora visual para el dashboard de módulos */
+.dashboard-card-full {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.dashboard-card-full .dashboard-card {
+  flex: 1 1 0;
+  max-width: 600px;
+}
+.dashboard-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 900px) {
+  .dashboard-card-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (min-width: 1024px) {
-  #dashboardCards {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 600px) {
+  .dashboard-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-card-full .dashboard-card {
+    max-width: 100%;
   }
 }
 

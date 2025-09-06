@@ -42,7 +42,7 @@
   gap: var(--space-s);
   align-items: center;
   justify-content: flex-end;
-  margin-top: var(--space-m);
+  margin-top: var(--space-l);
 }
 
 /* Result / final screen */
