@@ -1,7 +1,13 @@
 /* css/dashboard.css
    Dashboard: module cards, grid responsive y elementos específicos
 */
-
+/* Estilo para módulos inhabilitados */
+.modulo-inhabilitado {
+  opacity: 0.5;
+  pointer-events: none;
+  filter: grayscale(1);
+  border: 2px dashed #bbb;
+}
 /* Module card */
 .dashboard-card {
   background: var(--color-neutral-200);
@@ -91,15 +97,92 @@
   top: 12px;
 }
 
-/* Grid responsive: mobile -> tablet -> desktop */
-@media (min-width: 640px) {
-  #dashboardCards {
+/* Mejora visual para el dashboard de módulos */
+.dashboard-card-full {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.dashboard-card-full .dashboard-card {
+  flex: 1 1 0;
+  max-width: 600px;
+}
+.dashboard-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+/* Email Modal Responsive */
+.email-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  transition: background-color 220ms ease;
+}
+.email-modal-backdrop.active {
+  display: flex;
+}
+.email-modal {
+  width: 500px;
+  max-width: calc(100% - 40px);
+  background: var(--color-neutral-100);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: flex-start;
+}
+.email-modal .content {
+  flex: 1 1 auto;
+}
+.email-modal .title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+#btnEnviarEmailResultados,
+#btnCancelarEmailResultados {
+  margin-right: 5px;
+  margin-top: 22px;
+}
+.email-modal-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 17px;
+  border-radius: 8px;
+  border: 1px solid #c7d2fe;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.email-modal-input:focus {
+  border-color: #2563eb;
+}
+#emailError {
+  width: 100%;
+  margin-top: 5px;
+  color: #e11d48;
+  font-size: 12px;
+  min-height: 22px;
+  text-align: left;
+  display: none;
+}
+@media (max-width: 900px) {
+  .dashboard-card-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (min-width: 1024px) {
-  #dashboardCards {
-    grid-template-columns: repeat(3, 1fr);
+@media (max-width: 600px) {
+  .dashboard-card-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-card-full .dashboard-card {
+    max-width: 100%;
   }
 }
 

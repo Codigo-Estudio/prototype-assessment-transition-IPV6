@@ -137,39 +137,48 @@ App.ui = App.ui || {};
     section3.appendChild(tipsList);
     reportEl.appendChild(section3);
 
-    // Botones
-    const btnWrap = document.createElement("div");
-    btnWrap.className = "report-btns";
+    // Botonera flotante superior izquierda
+    let floatingBtns = document.getElementById("reportFloatingBtns");
+    if (!floatingBtns) {
+      floatingBtns = document.createElement("div");
+      floatingBtns.id = "reportFloatingBtns";
+      floatingBtns.className = "report-floating-btns";
+      document.body.appendChild(floatingBtns);
+    } else {
+      floatingBtns.innerHTML = "";
+      floatingBtns.className = "report-floating-btns";
+    }
+
     // Botón atrás
     const backBtn = document.createElement("button");
     backBtn.className = "btn-back";
-    backBtn.innerHTML =
-      App.moduleIcons && App.moduleIcons["icon_back"]
-        ? App.moduleIcons["icon_back"]
-        : "⬅";
+    backBtn.innerHTML = `<span class="btn-icon">${App.moduleIcons.icon_back}</span><span class="btn-text">Dashboard</span>`;
     backBtn.title = "Volver al dashboard";
     backBtn.onclick = function () {
       // Eliminar la sección del informe del DOM para evitar duplicados
       if (reportEl && reportEl.parentNode) {
         reportEl.parentNode.removeChild(reportEl);
       }
+      // Eliminar la botonera flotante
+      if (floatingBtns && floatingBtns.parentNode) {
+        floatingBtns.parentNode.removeChild(floatingBtns);
+      }
       // Mostrar dashboard
       const dashboardEl = document.getElementById("dashboard");
       if (dashboardEl) dashboardEl.classList.remove("hidden");
       App.ui.showDashboard && App.ui.showDashboard();
-      // Posicionar en el top al volver al dashboard
       window.scrollTo({ top: 0, behavior: "instant" });
     };
-    btnWrap.appendChild(backBtn);
+    floatingBtns.appendChild(backBtn);
+
     // Botón descargar
     const downloadBtn = document.createElement("button");
     downloadBtn.className = "btn-download";
-    downloadBtn.innerHTML = "Descargar";
+    downloadBtn.innerHTML = `<span class="btn-icon">${App.moduleIcons.icon_download}</span><span class="btn-text">Descargar</span>`;
     downloadBtn.title = "Descargar informe";
     downloadBtn.onclick = function () {
       App.utils.exportElementToPDF(reportEl, "informe-madurez-ipv6.pdf");
     };
-    btnWrap.appendChild(downloadBtn);
-    reportEl.appendChild(btnWrap);
+    floatingBtns.appendChild(downloadBtn);
   };
 })(window.App);

@@ -28,25 +28,107 @@ window.App = window.App || {};
     renderCards();
     updateExportButton();
     attachResetHandler();
+
+    // Botón Enviar resultados
+    const enviarBtn = document.getElementById("btnEnviarResultados");
+    if (enviarBtn) {
+      enviarBtn.onclick = function () {
+        App.ui.emailModal.show({
+          title:
+            "Ingresa el email a donde se enviarán los resultados de la evaluación",
+          onSend: function (email) {
+            App.ui.messageModal.show({
+              iconKey: "avatar_bot",
+              title: "¡Enviado!",
+              body: "Los resultados de la evaluación han sido enviados con éxito.",
+              opacity: 0.6,
+              onClose: null,
+              buttonText: "Entendido",
+            });
+          },
+          onClose: null,
+        });
+      };
+    }
   };
 
   /**
    * Renderiza las cards de cada módulo usando componentsUI.
    */
+  // Estado de nivel actual (persistente en memoria)
+  let nivelActual = 1;
+
+  function getModulosHabilitados(modules, nivelActual, progresoPorModulo) {
+    return modules.map((modulo) => ({
+      ...modulo,
+      habilitado:
+        modulo.nivel === nivelActual || progresoPorModulo[modulo.id] === 100,
+    }));
+  }
+
+  function getSiguienteNivel(modules, progresoPorModulo, nivelActual) {
+    const modulosNivelActual = modules.filter((m) => m.nivel === nivelActual);
+    const todosCompletos = modulosNivelActual.every(
+      (m) => progresoPorModulo[m.id] === 100
+    );
+    return todosCompletos ? nivelActual + 1 : nivelActual;
+  }
+
   function renderCards() {
     cardsContainer.innerHTML = "";
-
-    App.modules.forEach((module) => {
-      const progress = App.dashboard.getModuleProgress(module.id);
-
-      const card = App.ui.components.createModuleCard(
-        module,
-        progress,
-        () => App.moduleManager.startModule(module.id) // callback click
-      );
-
-      cardsContainer.appendChild(card);
+    // Obtener progreso por módulo
+    const progresoPorModulo = {};
+    App.modules.forEach((m) => {
+      progresoPorModulo[m.id] = App.dashboard.getModuleProgress(m.id);
     });
+
+    // Actualizar nivelActual si corresponde
+    nivelActual = getSiguienteNivel(
+      App.modules,
+      progresoPorModulo,
+      nivelActual
+    );
+
+    // Obtener estado de habilitación por módulo
+    const modulosConEstado = getModulosHabilitados(
+      App.modules,
+      nivelActual,
+      progresoPorModulo
+    );
+
+    // Separar el módulo Datos Básicos
+    const modBasicos = modulosConEstado.find(
+      (m) => m.id === "mod_datos_basicos"
+    );
+    const otrosModulos = modulosConEstado.filter(
+      (m) => m.id !== "mod_datos_basicos"
+    );
+
+    // Card principal (fila completa)
+    if (modBasicos) {
+      const progress = App.dashboard.getModuleProgress(modBasicos.id);
+      const card = App.ui.components.createModuleCard(
+        modBasicos,
+        progress,
+        () => App.moduleManager.startModule(modBasicos.id)
+      );
+      card.classList.add("dashboard-card-full");
+      if (!modBasicos.habilitado) card.classList.add("modulo-inhabilitado");
+      cardsContainer.appendChild(card);
+    }
+
+    // Grid para los otros módulos (2 filas de 3 cards)
+    const grid = document.createElement("div");
+    grid.className = "dashboard-card-grid";
+    otrosModulos.forEach((module, i) => {
+      const progress = App.dashboard.getModuleProgress(module.id);
+      const card = App.ui.components.createModuleCard(module, progress, () =>
+        App.moduleManager.startModule(module.id)
+      );
+      if (!module.habilitado) card.classList.add("modulo-inhabilitado");
+      grid.appendChild(card);
+    });
+    cardsContainer.appendChild(grid);
   }
 
   /**
@@ -54,6 +136,7 @@ window.App = window.App || {};
    */
   function updateExportButton() {
     const btn = document.getElementById("btnResultados");
+    const enviarBtn = document.getElementById("btnEnviarResultados");
     if (!btn) return;
     const allComplete = App.dashboard.allModulesComplete();
     btn.disabled = !allComplete;
@@ -65,6 +148,12 @@ window.App = window.App || {};
         App.ui.showReport();
       }
     };
+    // Sincronizar estado de habilitación del botón Enviar resultados
+    if (enviarBtn) {
+      enviarBtn.disabled = !allComplete;
+      if (allComplete) enviarBtn.removeAttribute("aria-disabled");
+      else enviarBtn.setAttribute("aria-disabled", "true");
+    }
   }
 
   /**
@@ -104,6 +193,9 @@ window.App = window.App || {};
             localStorage.removeItem(k);
         });
       } catch (e) {}
+
+      // Reiniciar nivelActual a 1 para habilitar los módulos de nivel 1
+      nivelActual = 1;
 
       // Refresh dashboard and modules
       try {
