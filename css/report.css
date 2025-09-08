@@ -9,6 +9,19 @@
   padding: 32px 24px;
   font-family: "Inter", Arial, sans-serif;
 }
+/* Forzado de layout escritorio para exportación PDF */
+.force-desktop-report {
+  max-width: 800px !important;
+  width: 800px !important;
+  margin: 0 auto !important;
+  padding: 32px 24px !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+/* Evitar que media queries reduzcan el ancho dentro de exportación */
+.force-desktop-report * {
+  box-sizing: border-box;
+}
 .report-header h1 {
   font-size: 2.2rem;
   margin-bottom: 0.5em;
