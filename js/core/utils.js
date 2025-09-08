@@ -224,59 +224,103 @@ window.App = window.App || {};
    * @param {string} filename - Nombre del archivo PDF
    */
   App.utils.exportElementToPDF = function (el, filename = "reporte.pdf") {
-    if (!el || !window.html2canvas) return;
-    window.html2canvas(el, { scale: 2, useCORS: true }).then(function (canvas) {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new window.jspdf.jsPDF({
-        orientation: "portrait",
-        unit: "pt",
-        format: "a4",
-      });
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = pageWidth - 40;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let position = 20;
-      let remainingHeight = imgHeight;
-      if (imgHeight <= pageHeight - 40) {
-        pdf.addImage(imgData, "PNG", 20, position, imgWidth, imgHeight);
-      } else {
-        const pageImgHeight = pageHeight - 40;
-        let pageNum = 0;
-        while (remainingHeight > 0) {
-          const sourceY =
-            (canvas.height * (pageNum * pageImgHeight)) / imgHeight;
-          const sourceHeight = (canvas.height * pageImgHeight) / imgHeight;
-          const pageCanvas = document.createElement("canvas");
-          pageCanvas.width = canvas.width;
-          pageCanvas.height = sourceHeight;
-          const ctx = pageCanvas.getContext("2d");
-          ctx.drawImage(
-            canvas,
-            0,
-            sourceY,
-            canvas.width,
-            sourceHeight,
-            0,
-            0,
-            canvas.width,
-            sourceHeight
-          );
-          const pageImgData = pageCanvas.toDataURL("image/png");
-          pdf.addImage(
-            pageImgData,
-            "PNG",
-            20,
-            position,
-            imgWidth,
-            pageImgHeight
-          );
-          remainingHeight -= pageImgHeight;
-          pageNum++;
-          if (remainingHeight > 0) pdf.addPage();
-        }
-      }
-      pdf.save(filename);
-    });
+    if (!el || !window.html2canvas || !window.jspdf) return;
+
+    // 1. Clonar el elemento para forzar layout de escritorio sin alterar la vista actual
+    const clone = el.cloneNode(true);
+    clone.classList.add("force-desktop-report");
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "fixed";
+    wrapper.style.left = "-9999px"; // fuera de pantalla
+    wrapper.style.top = "0";
+    wrapper.style.width = "820px"; // espacio suficiente para 800px + padding
+    wrapper.style.zIndex = "-1"; // no interferir con interacción
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    // 2. Forzar fuentes reflow (pequeño timeout opcional)
+    setTimeout(function () {
+      window
+        .html2canvas(clone, {
+          scale: 2, // buena resolución
+          useCORS: true,
+          backgroundColor: "#ffffff",
+          windowWidth: 820, // asegurar ancho lógico
+        })
+        .then(function (canvas) {
+          try {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new window.jspdf.jsPDF({
+              orientation: "portrait",
+              unit: "pt",
+              format: "a4",
+            });
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 20;
+            const imgWidth = pageWidth - margin * 2;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            let remainingHeight = imgHeight;
+            let positionY = margin;
+
+            if (imgHeight <= pageHeight - margin * 2) {
+              pdf.addImage(
+                imgData,
+                "PNG",
+                margin,
+                positionY,
+                imgWidth,
+                imgHeight
+              );
+            } else {
+              const pageImgHeight = pageHeight - margin * 2;
+              let pageNum = 0;
+              while (remainingHeight > 0) {
+                const sourceY =
+                  (canvas.height * (pageNum * pageImgHeight)) / imgHeight;
+                const sourceHeight =
+                  (canvas.height * pageImgHeight) / imgHeight;
+                const pageCanvas = document.createElement("canvas");
+                pageCanvas.width = canvas.width;
+                pageCanvas.height = sourceHeight;
+                const ctx = pageCanvas.getContext("2d");
+                ctx.drawImage(
+                  canvas,
+                  0,
+                  sourceY,
+                  canvas.width,
+                  sourceHeight,
+                  0,
+                  0,
+                  canvas.width,
+                  sourceHeight
+                );
+                const pageImgData = pageCanvas.toDataURL("image/png");
+                pdf.addImage(
+                  pageImgData,
+                  "PNG",
+                  margin,
+                  positionY,
+                  imgWidth,
+                  pageImgHeight
+                );
+                remainingHeight -= pageImgHeight;
+                pageNum++;
+                if (remainingHeight > 0) pdf.addPage();
+              }
+            }
+            pdf.save(filename);
+          } finally {
+            // 3. Limpiar el DOM temporal
+            if (wrapper && wrapper.parentNode)
+              wrapper.parentNode.removeChild(wrapper);
+          }
+        })
+        .catch(function (err) {
+          console.error("Error exportando PDF:", err);
+          if (wrapper && wrapper.parentNode)
+            wrapper.parentNode.removeChild(wrapper);
+        });
+    }, 50);
   };
 })(window.App);
