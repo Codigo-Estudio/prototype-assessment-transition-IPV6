@@ -12,11 +12,11 @@
 /* Forzado de layout escritorio para exportación PDF */
 .force-desktop-report {
   max-width: 800px !important;
-  width: 800px !important;
+  /*width: 800px !important;*/
   margin: 0 auto !important;
   padding: 32px 24px !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 18px !important;
 }
 /* Evitar que media queries reduzcan el ancho dentro de exportación */
 .force-desktop-report * {
