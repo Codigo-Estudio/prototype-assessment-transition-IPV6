@@ -34,138 +34,164 @@ window.App = window.App || {};
    * @type {Array<{ id: string, modulo: string, texto: string }>}
    */
   App.tipsModulo = [
-    // ---------------- Datos Básicos ----------------
+    // ---------------- Perfilamiento Inicial ----------------
     {
-      id: "mod_datos_basicos_bajo",
-      modulo: "mod_datos_basicos",
+      id: "mod_perfilamiento_bajo",
+      modulo: "mod_perfilamiento",
       texto:
-        "El módulo de Datos Básicos presenta oportunidades de mejora en la gestión de activos y procesos.",
+        "El módulo de Perfilamiento Inicial presenta oportunidades de mejora en la caracterización de la organización.",
     },
     {
-      id: "mod_datos_basicos_medio",
-      modulo: "mod_datos_basicos",
+      id: "mod_perfilamiento_medio",
+      modulo: "mod_perfilamiento",
       texto:
-        "El módulo de Datos Básicos muestra una gestión regular y procesos no tan definidos.",
+        "El módulo de Perfilamiento Inicial muestra un nivel de caracterización intermedio con aspectos por reforzar.",
     },
     {
-      id: "mod_datos_basicos_alto",
-      modulo: "mod_datos_basicos",
+      id: "mod_perfilamiento_alto",
+      modulo: "mod_perfilamiento",
       texto:
-        "El módulo de Datos Básicos muestra una gestión sólida y procesos bien definidos.",
+        "El módulo de Perfilamiento Inicial refleja una caracterización sólida y bien definida de la organización.",
     },
-    // ---------------- Hardware ----------------
+
+    // ---------------- Hardware y Dispositivos ----------------
     {
       id: "mod_hardware_bajo",
       modulo: "mod_hardware",
       texto:
-        "El módulo de Hardware presenta carencias en el inventario y documentación de los dispositivos de red.",
+        "El módulo de Hardware y Dispositivos presenta debilidades en la preparación tecnológica para IPv6.",
     },
     {
       id: "mod_hardware_medio",
       modulo: "mod_hardware",
       texto:
-        "El módulo de Hardware tiene un inventario parcialmente documentado, pero requiere mejoras.",
+        "El módulo de Hardware y Dispositivos muestra un nivel de preparación intermedio con margen de mejora.",
     },
     {
       id: "mod_hardware_alto",
       modulo: "mod_hardware",
       texto:
-        "El módulo de Hardware cuenta con un inventario completo y actualizado de los dispositivos de red.",
+        "El módulo de Hardware y Dispositivos evidencia una infraestructura robusta y lista para IPv6.",
     },
-    // ---------------- Software ----------------
+
+    // ---------------- Software y Sistemas ----------------
     {
       id: "mod_software_bajo",
       modulo: "mod_software",
       texto:
-        "El módulo de Software muestra bajo avance en la implementación y conocimiento de IPv6.",
+        "El módulo de Software y Sistemas presenta limitaciones en compatibilidad y gestión de entornos.",
     },
     {
       id: "mod_software_medio",
       modulo: "mod_software",
       texto:
-        "El módulo de Software tiene avances moderados en la transición y capacitación sobre IPv6.",
+        "El módulo de Software y Sistemas refleja un nivel de compatibilidad intermedio con áreas de mejora.",
     },
     {
       id: "mod_software_alto",
       modulo: "mod_software",
       texto:
-        "El módulo de Software está bien preparado y el personal tiene experiencia en IPv6.",
+        "El módulo de Software y Sistemas cuenta con una gestión sólida y entornos compatibles con IPv6.",
     },
-    // ---------------- Planeación ----------------
+
+    // ---------------- Nube y Proveedores Externos ----------------
     {
-      id: "mod_planeacion_bajo",
-      modulo: "mod_planeacion",
+      id: "mod_nube_bajo",
+      modulo: "mod_nube",
       texto:
-        "El módulo de Planeación carece de presupuesto y recursos adecuados para la transición a IPv6.",
-    },
-    {
-      id: "mod_planeacion_medio",
-      modulo: "mod_planeacion",
-      texto:
-        "El módulo de Planeación tiene recursos parcialmente adecuados, pero requiere mayor análisis y asignación.",
+        "El módulo de Nube y Proveedores Externos presenta baja preparación en servicios y coordinación con proveedores.",
     },
     {
-      id: "mod_planeacion_alto",
-      modulo: "mod_planeacion",
+      id: "mod_nube_medio",
+      modulo: "mod_nube",
       texto:
-        "El módulo de Planeación cuenta con presupuesto y recursos bien definidos para la transición a IPv6.",
-    },
-    // ---------------- Implementación ----------------
-    {
-      id: "mod_implementacion_bajo",
-      modulo: "mod_implementacion",
-      texto:
-        "El módulo de Implementación presenta problemas de compatibilidad y estabilidad tras la transición a IPv6.",
+        "El módulo de Nube y Proveedores Externos refleja un nivel intermedio de adopción con oportunidades de mejora.",
     },
     {
-      id: "mod_implementacion_medio",
-      modulo: "mod_implementacion",
+      id: "mod_nube_alto",
+      modulo: "mod_nube",
       texto:
-        "El módulo de Implementación tiene una transición regular, pero aún existen áreas de mejora en desempeño y estabilidad.",
+        "El módulo de Nube y Proveedores Externos muestra una integración sólida y alineación con los proveedores.",
+    },
+
+    // ---------------- Personal y Capacitación ----------------
+    {
+      id: "mod_personal_bajo",
+      modulo: "mod_personal",
+      texto:
+        "El módulo de Personal y Capacitación presenta carencias en formación y liderazgo técnico en IPv6.",
     },
     {
-      id: "mod_implementacion_alto",
-      modulo: "mod_implementacion",
+      id: "mod_personal_medio",
+      modulo: "mod_personal",
       texto:
-        "El módulo de Implementación muestra una transición exitosa y estable a IPv6 en la organización.",
-    },
-    // ---------------- Capacitación ----------------
-    {
-      id: "mod_capacitacion_bajo",
-      modulo: "mod_capacitacion",
-      texto:
-        "El módulo de Capacitación evidencia falta de conocimiento y preparación del personal de TI para IPv6.",
+        "El módulo de Personal y Capacitación refleja un nivel de preparación intermedio con avances puntuales.",
     },
     {
-      id: "mod_capacitacion_medio",
-      modulo: "mod_capacitacion",
+      id: "mod_personal_alto",
+      modulo: "mod_personal",
       texto:
-        "El módulo de Capacitación tiene avances en formación, pero aún existen brechas de conocimiento sobre IPv6.",
+        "El módulo de Personal y Capacitación muestra un equipo bien preparado y con liderazgo definido en IPv6.",
     },
-    {
-      id: "mod_capacitacion_alto",
-      modulo: "mod_capacitacion",
-      texto:
-        "El módulo de Capacitación demuestra que el personal de TI está bien preparado para la transición a IPv6.",
-    },
-    // ---------------- Seguridad ----------------
+
+    // ---------------- Seguridad y Riesgos ----------------
     {
       id: "mod_seguridad_bajo",
       modulo: "mod_seguridad",
       texto:
-        "El módulo de Seguridad presenta vulnerabilidades y falta de políticas adecuadas para IPv6.",
+        "El módulo de Seguridad y Riesgos evidencia baja preparación frente a incidentes y vulnerabilidades en IPv6.",
     },
     {
       id: "mod_seguridad_medio",
       modulo: "mod_seguridad",
       texto:
-        "El módulo de Seguridad tiene políticas parcialmente implementadas, pero requiere mayor actualización y control.",
+        "El módulo de Seguridad y Riesgos refleja una preparación intermedia con procesos parcialmente definidos.",
     },
     {
       id: "mod_seguridad_alto",
       modulo: "mod_seguridad",
       texto:
-        "El módulo de Seguridad cuenta con políticas robustas y actualizadas para proteger la red IPv6.",
+        "El módulo de Seguridad y Riesgos muestra una gestión madura y protocolos sólidos frente a IPv6.",
+    },
+
+    // ---------------- Planificación, Recursos y Estrategia ----------------
+    {
+      id: "mod_planificacion_bajo",
+      modulo: "mod_planificacion",
+      texto:
+        "El módulo de Planificación, Recursos y Estrategia presenta debilidades en la definición de planes y recursos.",
+    },
+    {
+      id: "mod_planificacion_medio",
+      modulo: "mod_planificacion",
+      texto:
+        "El módulo de Planificación, Recursos y Estrategia refleja un nivel intermedio de planificación con aspectos a fortalecer.",
+    },
+    {
+      id: "mod_planificacion_alto",
+      modulo: "mod_planificacion",
+      texto:
+        "El módulo de Planificación, Recursos y Estrategia evidencia una estrategia sólida y bien estructurada.",
+    },
+
+    // ---------------- Conectividad Externa y Cumplimiento ----------------
+    {
+      id: "mod_conectividad_bajo",
+      modulo: "mod_conectividad",
+      texto:
+        "El módulo de Conectividad Externa y Cumplimiento presenta baja preparación y cumplimiento parcial en normativas.",
+    },
+    {
+      id: "mod_conectividad_medio",
+      modulo: "mod_conectividad",
+      texto:
+        "El módulo de Conectividad Externa y Cumplimiento refleja un nivel intermedio de cumplimiento y adopción.",
+    },
+    {
+      id: "mod_conectividad_alto",
+      modulo: "mod_conectividad",
+      texto:
+        "El módulo de Conectividad Externa y Cumplimiento muestra un cumplimiento robusto y conectividad adecuada en IPv6.",
     },
   ];
 })(window.App);
