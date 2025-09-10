@@ -20,10 +20,10 @@ window.App = window.App || {};
       module: "mod_perfilamiento",
       text: "¿Cuál es el tamaño de la empresa (Por cantidad de Empleados)?",
       options: [
-        { text: "Micro (1-10)", score: 1 },
-        { text: "Pequeña (11-50)", score: 1 },
-        { text: "Mediana (51-200)", score: 1 },
-        { text: "Grande (>200)", score: 1 },
+        { text: "Micro (1-10)", score: null },
+        { text: "Pequeña (11-50)", score: null },
+        { text: "Mediana (51-200)", score: null },
+        { text: "Grande (>200)", score: null },
       ],
     },
     {
@@ -31,10 +31,10 @@ window.App = window.App || {};
       module: "mod_perfilamiento",
       text: "¿Cuál es la cantidad de sedes de la empresa?",
       options: [
-        { text: "1-2", score: 1 },
-        { text: "3-20", score: 1 },
-        { text: "21-99", score: 1 },
-        { text: ">100", score: 1 },
+        { text: "1-2", score: null },
+        { text: "3-20", score: null },
+        { text: "21-99", score: null },
+        { text: ">100", score: null },
       ],
     },
     {
@@ -42,10 +42,10 @@ window.App = window.App || {};
       module: "mod_perfilamiento",
       text: "¿Cuál es la cantidad estimada de dispositivos finales (Incluyendo invitados, cámaras de seguridad, Telefonía IP, Servidores, etc...) que se conectan a la red de la empresa?",
       options: [
-        { text: "1-99", score: 1 },
-        { text: "100-999", score: 1 },
-        { text: "1000-9999", score: 1 },
-        { text: ">10000", score: 1 },
+        { text: "1-99", score: null },
+        { text: "100-999", score: null },
+        { text: "1000-9999", score: null },
+        { text: ">10000", score: null },
       ],
     },
     {
@@ -53,9 +53,9 @@ window.App = window.App || {};
       module: "mod_perfilamiento",
       text: "¿Cuenta con Infraestructura de TI (Servidores, Bases de Datos, Aplicaciones, Contenedores, etc...) en Cloud?",
       options: [
-        { text: "Sí", score: 1 },
-        { text: "No", score: 0 },
-        { text: "Híbrida", score: 0.5 },
+        { text: "Sí", score: null },
+        { text: "No", score: null },
+        { text: "Híbrida", score: null },
       ],
     },
     {
@@ -63,15 +63,15 @@ window.App = window.App || {};
       module: "mod_perfilamiento",
       text: "¿Cuenta con servicios o aplicaciones expuestos en Internet (VPN, Sitios Web, API, etc...)?",
       options: [
-        { text: "Sí", score: 1 },
-        { text: "No", score: 0 },
+        { text: "Sí", score: null },
+        { text: "No", score: null },
       ],
     },
     // ---------------- Hardware y Dispositivos ----------------
     {
       id: "qns_mod_hardware_1",
       module: "mod_hardware",
-      text: "¿Su organización dispone de equipos de red gestionables (routers/switches/firewalls) bajo su control o por proveedor gestionado?",
+      text: "¿Su organización dispone de equipos de red gestionables (routers/ switches/ firewalls) bajo su control o por proveedor gestionado?",
       options: [
         { text: "Sí", score: 1 },
         { text: "No", score: 0 },
@@ -723,7 +723,7 @@ window.App = window.App || {};
     {
       id: "qns_mod_conectividad_1",
       module: "mod_conectividad",
-      text: "¿Su empresa cumple con normativas/regulaciones aplicables relacionadas con IPv6 (ej. ISO 27001, NIST, GDPR, etc.)?",
+      text: "¿Su empresa cumple con normativas/ regulaciones aplicables relacionadas con IPv6 (ej. ISO 27001, NIST, GDPR, etc.)?",
       options: [
         { text: "Sí, todas", score: 1 },
         { text: "Sí, parcialmente", score: 0.8 },

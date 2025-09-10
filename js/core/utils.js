@@ -170,6 +170,8 @@ window.App = window.App || {};
    * @returns {number} Porcentaje de madurez (0-100)
    */
   App.utils.calcularPorcentajeMadurezModulo = function (moduleId, respuestas) {
+    // Excluir módulo de perfilamiento
+    if (moduleId === "mod_perfilamiento") return 0;
     const preguntasModulo = window.App.questions.filter(
       (q) => q.module === moduleId
     );
@@ -210,7 +212,8 @@ window.App = window.App || {};
    * @returns {number} Porcentaje de madurez general (0-100)
    */
   App.utils.calcularPorcentajeMadurezGeneral = function (respuestas) {
-    const modulos = [...new Set(window.App.questions.map((q) => q.module))];
+    // Excluir módulo de perfilamiento
+    const modulos = [...new Set(window.App.questions.map((q) => q.module))].filter(m => m !== "mod_perfilamiento");
     const porcentajes = modulos.map((modulo) =>
       App.utils.calcularPorcentajeMadurezModulo(modulo, respuestas)
     );
