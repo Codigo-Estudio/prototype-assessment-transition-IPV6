@@ -34,26 +34,6 @@ window.App = window.App || {};
    * @type {Array<{ id: string, modulo: string, texto: string }>}
    */
   App.tipsModulo = [
-    // ---------------- Perfilamiento Inicial ----------------
-    {
-      id: "mod_perfilamiento_bajo",
-      modulo: "mod_perfilamiento",
-      texto:
-        "El módulo de Perfilamiento Inicial presenta oportunidades de mejora en la caracterización de la organización.",
-    },
-    {
-      id: "mod_perfilamiento_medio",
-      modulo: "mod_perfilamiento",
-      texto:
-        "El módulo de Perfilamiento Inicial muestra un nivel de caracterización intermedio con aspectos por reforzar.",
-    },
-    {
-      id: "mod_perfilamiento_alto",
-      modulo: "mod_perfilamiento",
-      texto:
-        "El módulo de Perfilamiento Inicial refleja una caracterización sólida y bien definida de la organización.",
-    },
-
     // ---------------- Hardware y Dispositivos ----------------
     {
       id: "mod_hardware_bajo",

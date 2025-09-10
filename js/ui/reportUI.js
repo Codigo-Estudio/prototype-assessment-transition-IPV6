@@ -59,6 +59,47 @@ App.ui = App.ui || {};
           : {};
       respuestas = store.answers || {};
     }
+
+    // Sección Perfil de la Empresa
+    function getPerfilAnswerText(qid) {
+      const ans = respuestas[qid];
+      if (ans == null) return "-";
+      if (typeof ans === "string") return ans;
+      if (typeof ans === "object") {
+        if (ans.answer) {
+          if (typeof ans.answer === "string") return ans.answer;
+          if (typeof ans.answer === "object" && ans.answer.text)
+            return ans.answer.text;
+        }
+        if (ans.text) return ans.text;
+      }
+      return "-";
+    }
+    const perfilSection = document.createElement("section");
+    perfilSection.className = "report-perfil-empresa";
+    perfilSection.innerHTML = `
+      <h2>Perfil de la Empresa</h2>
+      <ul class="perfil-list">
+        <li><strong>Tamaño de la Empresa:</strong> ${getPerfilAnswerText(
+          "qns_mod_perfilamiento_1"
+        )}</li>
+        <li><strong>Cantidad de Sedes:</strong> ${getPerfilAnswerText(
+          "qns_mod_perfilamiento_2"
+        )}</li>
+        <li><strong>Cantidad de Dispositivos:</strong> ${getPerfilAnswerText(
+          "qns_mod_perfilamiento_3"
+        )}</li>
+        <li><strong>Posee Infraestructura de TI en Cloud:</strong> ${getPerfilAnswerText(
+          "qns_mod_perfilamiento_4"
+        )}</li>
+        <li><strong>Posee Servicios/Aplicaciones en la Web:</strong> ${getPerfilAnswerText(
+          "qns_mod_perfilamiento_5"
+        )}</li>
+      </ul>
+    `;
+    reportEl.appendChild(perfilSection);
+
+    // Sección 1: Puntaje general
     const generalScore = App.utils.calcularPorcentajeMadurezGeneral(respuestas);
     let generalTip = App.tipsGeneral[0].texto;
     if (generalScore >= 60)
@@ -78,7 +119,10 @@ App.ui = App.ui || {};
     reportEl.appendChild(section1);
 
     // Sección 2: Módulos con iconos y porcentaje
-    const modulos = Array.from(new Set(App.questions.map((q) => q.module)));
+    // Excluir módulo de perfilamiento en la sección de módulos
+    const modulos = Array.from(
+      new Set(App.questions.map((q) => q.module))
+    ).filter((m) => m !== "mod_perfilamiento");
     const section2 = document.createElement("section");
     section2.className = "report-modules";
     section2.innerHTML = `<h2>Madurez por Módulo</h2>`;
