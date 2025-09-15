@@ -117,11 +117,12 @@ App.ui = App.ui || {};
     // Solo mostrar módulos habilitados por la ruta activa
     let modulos = [];
     if (
-      typeof App.getEnabledQuestionsByProfile === "function" &&
+      App.utils &&
+      typeof App.utils.getEnabledQuestionsByProfile === "function" &&
       window.App &&
       window.App._profileAnswers
     ) {
-      const enabled = App.getEnabledQuestionsByProfile(
+      const enabled = App.utils.getEnabledQuestionsByProfile(
         window.App._profileAnswers
       );
       modulos = Array.from(new Set(App.questions.map((q) => q.module)))

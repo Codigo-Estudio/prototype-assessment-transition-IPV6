@@ -93,11 +93,12 @@ window.App = window.App || {};
     } else {
       // Mostrar solo los módulos con preguntas habilitadas por la ruta
       if (
-        typeof App.getEnabledQuestionsByProfile === "function" &&
+        App.utils &&
+        typeof App.utils.getEnabledQuestionsByProfile === "function" &&
         window.App &&
         window.App._profileAnswers
       ) {
-        const enabledQuestions = App.getEnabledQuestionsByProfile(
+        const enabledQuestions = App.utils.getEnabledQuestionsByProfile(
           window.App._profileAnswers
         );
         modulosVisibles = App.modules.filter((m) => {
@@ -146,11 +147,12 @@ window.App = window.App || {};
     const perfilId = "mod_perfilamiento";
     let modulosVisibles = [];
     if (
-      typeof App.getEnabledQuestionsByProfile === "function" &&
+      App.utils &&
+      typeof App.utils.getEnabledQuestionsByProfile === "function" &&
       window.App &&
       window.App._profileAnswers
     ) {
-      const enabledQuestions = App.getEnabledQuestionsByProfile(
+      const enabledQuestions = App.utils.getEnabledQuestionsByProfile(
         window.App._profileAnswers
       );
       modulosVisibles = App.modules.filter((m) => {
