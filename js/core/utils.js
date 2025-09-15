@@ -172,9 +172,24 @@ window.App = window.App || {};
   App.utils.calcularPorcentajeMadurezModulo = function (moduleId, respuestas) {
     // Excluir módulo de perfilamiento
     if (moduleId === "mod_perfilamiento") return 0;
-    const preguntasModulo = window.App.questions.filter(
-      (q) => q.module === moduleId
-    );
+    // Solo considerar preguntas habilitadas por la ruta activa
+    let preguntasModulo = [];
+    if (
+      typeof App.getEnabledQuestionsByProfile === "function" &&
+      window.App &&
+      window.App._profileAnswers
+    ) {
+      const enabled = App.getEnabledQuestionsByProfile(
+        window.App._profileAnswers
+      );
+      preguntasModulo = window.App.questions.filter(
+        (q) => q.module === moduleId && enabled.includes(q.id)
+      );
+    } else {
+      preguntasModulo = window.App.questions.filter(
+        (q) => q.module === moduleId
+      );
+    }
     if (preguntasModulo.length === 0) return 0;
     const sumaScores = preguntasModulo.reduce((acc, pregunta) => {
       // respuestas[pregunta.id] puede ser un objeto { answer, ts }
@@ -194,8 +209,8 @@ window.App = window.App || {};
         } else if (typeof respuesta.answer === "number") {
           score = respuesta.answer;
         } else if (typeof respuesta.answer === "string") {
-          // Buscar el score en las opciones de la pregunta
-          const opt = pregunta.options.find((o) => o.text === respuesta.answer);
+          // Buscar el score en las opciones de la pregunta usando el id
+          const opt = pregunta.options.find((o) => o.id === respuesta.answer);
           score = opt ? opt.score : 0;
         }
       } else if (typeof respuesta === "number") {
@@ -213,7 +228,28 @@ window.App = window.App || {};
    */
   App.utils.calcularPorcentajeMadurezGeneral = function (respuestas) {
     // Excluir módulo de perfilamiento
-    const modulos = [...new Set(window.App.questions.map((q) => q.module))].filter(m => m !== "mod_perfilamiento");
+    // Solo considerar módulos con preguntas habilitadas por la ruta activa
+    let modulos = [];
+    if (
+      typeof App.getEnabledQuestionsByProfile === "function" &&
+      window.App &&
+      window.App._profileAnswers
+    ) {
+      const enabled = App.getEnabledQuestionsByProfile(
+        window.App._profileAnswers
+      );
+      modulos = [...new Set(window.App.questions.map((q) => q.module))]
+        .filter((m) => m !== "mod_perfilamiento")
+        .filter((m) =>
+          window.App.questions.some(
+            (q) => q.module === m && enabled.includes(q.id)
+          )
+        );
+    } else {
+      modulos = [...new Set(window.App.questions.map((q) => q.module))].filter(
+        (m) => m !== "mod_perfilamiento"
+      );
+    }
     const porcentajes = modulos.map((modulo) =>
       App.utils.calcularPorcentajeMadurezModulo(modulo, respuestas)
     );

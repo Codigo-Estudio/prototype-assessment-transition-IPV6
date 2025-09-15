@@ -82,53 +82,57 @@ window.App = window.App || {};
       progresoPorModulo[m.id] = App.dashboard.getModuleProgress(m.id);
     });
 
-    // Actualizar nivelActual si corresponde
-    nivelActual = getSiguienteNivel(
-      App.modules,
-      progresoPorModulo,
-      nivelActual
-    );
+    // Mostrar solo el módulo de perfilamiento si no está completo
+    const perfilId = "mod_perfilamiento";
+    const perfilCompletado = progresoPorModulo[perfilId] === 100;
 
-    // Obtener estado de habilitación por módulo
-    const modulosConEstado = getModulosHabilitados(
-      App.modules,
-      nivelActual,
-      progresoPorModulo
-    );
-
-    // Separar el módulo Datos Básicos
-    const modBasicos = modulosConEstado.find(
-      (m) => m.id === "mod_datos_basicos"
-    );
-    const otrosModulos = modulosConEstado.filter(
-      (m) => m.id !== "mod_datos_basicos"
-    );
-
-    // Card principal (fila completa)
-    if (modBasicos) {
-      const progress = App.dashboard.getModuleProgress(modBasicos.id);
-      const card = App.ui.components.createModuleCard(
-        modBasicos,
-        progress,
-        () => App.moduleManager.startModule(modBasicos.id)
-      );
-      card.classList.add("dashboard-card-full");
-      if (!modBasicos.habilitado) card.classList.add("modulo-inhabilitado");
-      cardsContainer.appendChild(card);
+    let modulosVisibles = [];
+    if (!perfilCompletado) {
+      // Solo mostrar perfilamiento
+      modulosVisibles = App.modules.filter((m) => m.id === perfilId);
+    } else {
+      // Mostrar solo los módulos con preguntas habilitadas por la ruta
+      if (
+        typeof App.getEnabledQuestionsByProfile === "function" &&
+        window.App &&
+        window.App._profileAnswers
+      ) {
+        const enabledQuestions = App.getEnabledQuestionsByProfile(
+          window.App._profileAnswers
+        );
+        modulosVisibles = App.modules.filter((m) => {
+          if (m.id === perfilId) return false;
+          // ¿Hay preguntas habilitadas para este módulo?
+          return App.questions.some(
+            (q) => q.module === m.id && enabledQuestions.includes(q.id)
+          );
+        });
+      } else {
+        // Si no hay respuestas de perfil, no mostrar ningún módulo
+        modulosVisibles = [];
+      }
     }
 
-    // Grid para los otros módulos (2 filas de 3 cards)
-    const grid = document.createElement("div");
-    grid.className = "dashboard-card-grid";
-    otrosModulos.forEach((module, i) => {
-      const progress = App.dashboard.getModuleProgress(module.id);
-      const card = App.ui.components.createModuleCard(module, progress, () =>
-        App.moduleManager.startModule(module.id)
+    // Renderizar cards visibles en orden, solo habilitar el primero pendiente
+    cardsContainer.innerHTML = "";
+    let moduloHabilitado = false;
+    modulosVisibles.forEach((modulo) => {
+      const progress = App.dashboard.getModuleProgress(modulo.id);
+      let habilitado = false;
+      if (progress === 100) {
+        habilitado = true;
+      } else if (!moduloHabilitado && progress < 100) {
+        habilitado = true;
+        moduloHabilitado = true;
+      }
+      const card = App.ui.components.createModuleCard(
+        modulo,
+        progress,
+        habilitado ? () => App.moduleManager.startModule(modulo.id) : null
       );
-      if (!module.habilitado) card.classList.add("modulo-inhabilitado");
-      grid.appendChild(card);
+      if (!habilitado) card.classList.add("modulo-inhabilitado");
+      cardsContainer.appendChild(card);
     });
-    cardsContainer.appendChild(grid);
   }
 
   /**
@@ -138,13 +142,35 @@ window.App = window.App || {};
     const btn = document.getElementById("btnResultados");
     const enviarBtn = document.getElementById("btnEnviarResultados");
     if (!btn) return;
-    const allComplete = App.dashboard.allModulesComplete();
+    // Solo considerar módulos visibles (excluyendo perfilamiento)
+    const perfilId = "mod_perfilamiento";
+    let modulosVisibles = [];
+    if (
+      typeof App.getEnabledQuestionsByProfile === "function" &&
+      window.App &&
+      window.App._profileAnswers
+    ) {
+      const enabledQuestions = App.getEnabledQuestionsByProfile(
+        window.App._profileAnswers
+      );
+      modulosVisibles = App.modules.filter((m) => {
+        if (m.id === perfilId) return false;
+        return App.questions.some(
+          (q) => q.module === m.id && enabledQuestions.includes(q.id)
+        );
+      });
+    }
+    // Verificar si todos los módulos visibles están completos
+    const allComplete =
+      modulosVisibles.length > 0 &&
+      modulosVisibles.every(
+        (m) => App.dashboard.getModuleProgress(m.id) === 100
+      );
     btn.disabled = !allComplete;
     if (allComplete) btn.removeAttribute("aria-disabled");
     else btn.setAttribute("aria-disabled", "true");
-    // Reemplazar cualquier handler previo asignando onclick directamente
     btn.onclick = function () {
-      if (App.dashboard.allModulesComplete() && App.ui.showReport) {
+      if (allComplete && App.ui.showReport) {
         App.ui.showReport();
       }
     };
