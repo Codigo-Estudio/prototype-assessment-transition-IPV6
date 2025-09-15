@@ -1,6 +1,9 @@
 (function (App) {
   "use strict";
-
+  /**
+   * Lista de modulos del dashboard
+   * @type {Array<{ id: string, title: string, nivel: number}> }
+   */
   App.modules = [
     { id: "mod_perfilamiento", title: "Perfilamiento Inicial", nivel: 1 },
     { id: "mod_hardware", title: "Hardware y Dispositivos", nivel: 2 },

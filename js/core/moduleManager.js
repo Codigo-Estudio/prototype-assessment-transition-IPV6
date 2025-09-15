@@ -58,7 +58,25 @@ window.App = window.App || {};
   // Obtiene todas las preguntas de un módulo
   function obtenerPreguntasModulo(moduleId) {
     if (!Array.isArray(App.questions)) return [];
-    return App.questions.filter((q) => q.module === moduleId);
+    // Si es perfilamiento, mostrar todas las preguntas
+    if (moduleId === "mod_perfilamiento") {
+      return App.questions.filter((q) => q.module === moduleId);
+    }
+    // Para otros módulos, filtrar por preguntas habilitadas según la ruta activa
+    if (
+      typeof App.getEnabledQuestionsByProfile === "function" &&
+      window.App &&
+      window.App._profileAnswers
+    ) {
+      const enabled = App.getEnabledQuestionsByProfile(
+        window.App._profileAnswers
+      );
+      return App.questions.filter(
+        (q) => q.module === moduleId && enabled.includes(q.id)
+      );
+    }
+    // Si no hay respuestas de perfil, no mostrar ninguna pregunta
+    return [];
   }
 
   // Devuelve cuántas preguntas han sido respondidas (sin contar saltadas)
@@ -154,12 +172,24 @@ window.App = window.App || {};
     const q = state.questionList[state.index];
     if (!q || !q.id) return;
 
+    // selectedOption puede ser el objeto completo o solo el id
+    let optionId = selectedOption;
+    if (typeof selectedOption === "object" && selectedOption.id) {
+      optionId = selectedOption.id;
+    }
+
     const store = leerAlmacenamiento();
     store.answers = store.answers || {};
     store.skipped = store.skipped || {};
 
-    store.answers[q.id] = { answer: selectedOption, ts: Date.now() };
+    store.answers[q.id] = { answer: optionId, ts: Date.now() };
     if (store.skipped[q.id]) delete store.skipped[q.id];
+
+    // Si es pregunta de perfilamiento, actualizar window.App._profileAnswers
+    if (q.module === "mod_perfilamiento") {
+      window.App._profileAnswers = window.App._profileAnswers || {};
+      window.App._profileAnswers[q.id] = optionId;
+    }
 
     guardarAlmacenamiento(store);
 
@@ -336,6 +366,20 @@ window.App = window.App || {};
     const skipped = store.skipped || {};
     const moduleQs = obtenerPreguntasModulo(moduleId).map((q) => q.id);
     return moduleQs.filter((qid) => skipped[qid]).length;
+  };
+
+  // Busca el texto de una opción por su id
+  App.moduleManager.getOptionTextById = function (optionId) {
+    if (!optionId || !Array.isArray(App.questions)) return optionId;
+    for (const q of App.questions) {
+      if (Array.isArray(q.options)) {
+        const opt = q.options.find(
+          (o) => typeof o === "object" && o.id === optionId
+        );
+        if (opt && opt.text) return opt.text;
+      }
+    }
+    return optionId;
   };
 
   App.moduleManager._state = state;

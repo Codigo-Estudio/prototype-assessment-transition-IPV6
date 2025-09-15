@@ -63,17 +63,12 @@ App.ui = App.ui || {};
     // Sección Perfil de la Empresa
     function getPerfilAnswerText(qid) {
       const ans = respuestas[qid];
-      if (ans == null) return "-";
-      if (typeof ans === "string") return ans;
-      if (typeof ans === "object") {
-        if (ans.answer) {
-          if (typeof ans.answer === "string") return ans.answer;
-          if (typeof ans.answer === "object" && ans.answer.text)
-            return ans.answer.text;
-        }
-        if (ans.text) return ans.text;
-      }
-      return "-";
+      if (!ans || !ans.answer) return "-";
+      // Buscar el texto de la opción por id
+      const pregunta = App.questions.find((q) => q.id === qid);
+      if (!pregunta || !Array.isArray(pregunta.options)) return ans.answer;
+      const opt = pregunta.options.find((o) => o.id === ans.answer);
+      return opt ? opt.text : ans.answer;
     }
     const perfilSection = document.createElement("section");
     perfilSection.className = "report-perfil-empresa";
@@ -119,10 +114,26 @@ App.ui = App.ui || {};
     reportEl.appendChild(section1);
 
     // Sección 2: Módulos con iconos y porcentaje
-    // Excluir módulo de perfilamiento en la sección de módulos
-    const modulos = Array.from(
-      new Set(App.questions.map((q) => q.module))
-    ).filter((m) => m !== "mod_perfilamiento");
+    // Solo mostrar módulos habilitados por la ruta activa
+    let modulos = [];
+    if (
+      typeof App.getEnabledQuestionsByProfile === "function" &&
+      window.App &&
+      window.App._profileAnswers
+    ) {
+      const enabled = App.getEnabledQuestionsByProfile(
+        window.App._profileAnswers
+      );
+      modulos = Array.from(new Set(App.questions.map((q) => q.module)))
+        .filter((m) => m !== "mod_perfilamiento")
+        .filter((m) =>
+          App.questions.some((q) => q.module === m && enabled.includes(q.id))
+        );
+    } else {
+      modulos = Array.from(new Set(App.questions.map((q) => q.module))).filter(
+        (m) => m !== "mod_perfilamiento"
+      );
+    }
     const section2 = document.createElement("section");
     section2.className = "report-modules";
     section2.innerHTML = `<h2>Madurez por Módulo</h2>`;
