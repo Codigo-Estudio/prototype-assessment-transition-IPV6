@@ -64,11 +64,12 @@ window.App = window.App || {};
     }
     // Para otros módulos, filtrar por preguntas habilitadas según la ruta activa
     if (
-      typeof App.getEnabledQuestionsByProfile === "function" &&
+      App.utils &&
+      typeof App.utils.getEnabledQuestionsByProfile === "function" &&
       window.App &&
       window.App._profileAnswers
     ) {
-      const enabled = App.getEnabledQuestionsByProfile(
+      const enabled = App.utils.getEnabledQuestionsByProfile(
         window.App._profileAnswers
       );
       return App.questions.filter(

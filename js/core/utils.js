@@ -383,4 +383,8 @@ window.App = window.App || {};
       window.App.profileRoutes.find((r) => r.options === key);
     return route ? route.questions : [];
   };
+  // Alias de retrocompatibilidad (referencias antiguas)
+  if (!App.getEnabledQuestionsByProfile) {
+    App.getEnabledQuestionsByProfile = App.utils.getEnabledQuestionsByProfile;
+  }
 })(window.App);
