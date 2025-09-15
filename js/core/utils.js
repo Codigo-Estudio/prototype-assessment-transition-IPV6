@@ -362,4 +362,25 @@ window.App = window.App || {};
         });
     }, 50);
   };
+
+  /**
+   * Obtiene los ids de preguntas habilitadas según las respuestas del perfilamiento.
+   * @param {Object} respuestasPerfil - { qns_mod_perfilamiento_1: optionId, ... }
+   * @returns {Array<string>} - Array de ids de preguntas habilitadas
+   */
+  App.utils.getEnabledQuestionsByProfile = function (respuestasPerfil) {
+    if (!respuestasPerfil) return [];
+    // Construir la clave de opciones
+    const key = [
+      respuestasPerfil["qns_mod_perfilamiento_1"],
+      respuestasPerfil["qns_mod_perfilamiento_2"],
+      respuestasPerfil["qns_mod_perfilamiento_3"],
+      respuestasPerfil["qns_mod_perfilamiento_4"],
+      respuestasPerfil["qns_mod_perfilamiento_5"],
+    ].join("|");
+    const route =
+      window.App.profileRoutes &&
+      window.App.profileRoutes.find((r) => r.options === key);
+    return route ? route.questions : [];
+  };
 })(window.App);
