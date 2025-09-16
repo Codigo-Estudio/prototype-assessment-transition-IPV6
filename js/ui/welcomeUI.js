@@ -67,9 +67,13 @@ window.App = window.App || {};
         cta.addEventListener("click", () => {
           const sec = document.getElementById("welcome");
           if (sec) sec.classList.add("hidden");
-          // si existe un helper para mostrar dashboard, usarlo
+          // Resetear estado antes de mostrar dashboard, sin toast
           try {
-            App.ui && App.ui.showDashboard && App.ui.showDashboard();
+            if (App.ui && typeof App.ui.resetSurveyState === "function") {
+              App.ui.resetSurveyState({ silent: true });
+            } else {
+              App.ui && App.ui.showDashboard && App.ui.showDashboard();
+            }
           } catch (e) {}
         });
       }
