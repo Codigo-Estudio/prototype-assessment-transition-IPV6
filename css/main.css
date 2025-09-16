@@ -28,14 +28,6 @@
   padding-top: var(--space-m);
 }
 
-/* Grid container placeholder (dashboard.css lo ampliará) */
-#dashboardCards {
-  display: grid;
-  gap: var(--space-l);
-  grid-template-columns: repeat(1, 1fr); /* ajustado por responsive */
-  margin-top: var(--space-m);
-}
-
 /* Controls row (ej. botón export) */
 .controls-row {
   display: flex;
