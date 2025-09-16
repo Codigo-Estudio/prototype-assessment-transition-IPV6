@@ -806,13 +806,13 @@ window.App = window.App || {};
         {
           id: "opt_mod_planificacion_9_b",
           text: "Parcialmente contemplados",
-          score: 0.6,
+          score: 0.8,
         },
         { id: "opt_mod_planificacion_9_c", text: "En evaluación", score: 0.5 },
         {
           id: "opt_mod_planificacion_9_d",
           text: "Probablemente contemplados",
-          score: 0.8,
+          score: 0.6,
         },
         {
           id: "opt_mod_planificacion_9_e",

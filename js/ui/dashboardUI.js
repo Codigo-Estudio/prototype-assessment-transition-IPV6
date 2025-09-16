@@ -201,73 +201,9 @@ window.App = window.App || {};
     const btn = document.getElementById("resetSurvey");
     if (!btn) return;
     btn.addEventListener("click", () => {
-      // Clear app storage via App.storage if available
-      try {
-        if (App.storage && typeof App.storage.clearState === "function") {
-          App.storage.clearState();
-        }
-      } catch (e) {}
-
-      // Also clear other known keys used by moduleManager
-      try {
-        localStorage.removeItem("ipv6_survey_v1");
-      } catch (e) {}
-
-      // Optionally clear chat histories per module keys
-      try {
-        Object.keys(localStorage).forEach((k) => {
-          if (k && k.indexOf("chat_history_") === 0) localStorage.removeItem(k);
-          if (k && k.indexOf("chat_welcome_seen_") === 0)
-            localStorage.removeItem(k);
-        });
-      } catch (e) {}
-
-      // Reiniciar nivelActual a 1 para habilitar los módulos de nivel 1
-      nivelActual = 1;
-
-      // Refresh dashboard and modules
-      try {
-        if (
-          App.ui &&
-          App.ui.dashboard &&
-          typeof App.ui.dashboard.refresh === "function"
-        )
-          App.ui.dashboard.refresh();
-        if (App.ui && typeof App.ui.showDashboard === "function")
-          App.ui.showDashboard();
-        if (App.moduleManager && App.moduleManager._state) {
-          App.moduleManager._state = {
-            currentModuleId: null,
-            questionList: [],
-            index: 0,
-            seenCount: 0,
-            totalForModule: 0,
-          };
-        }
-        // Limpiar historial visual del chat
-        if (App.chatbot) {
-          // Vaciar contenedor de conversación
-          var convoEl = document.getElementById("chatConversation");
-          if (convoEl) convoEl.innerHTML = "";
-          // Reiniciar estado interno
-          App.chatbot._currentModuleId = null;
-          App.chatbot._currentQuestionId = null;
-          if (typeof App.chatbot._loadHistory === "function") {
-            App.chatbot._loadHistory(null);
-          }
-        }
-      } catch (e) {}
-
-      // Notify user
-      try {
-        if (App.toast && typeof App.toast.show === "function") {
-          App.toast.show(
-            "Datos reiniciados. Puedes iniciar una nueva evaluación."
-          );
-        } else {
-          alert("Datos reiniciados. Puedes iniciar una nueva evaluación.");
-        }
-      } catch (e) {}
+      if (App.ui && typeof App.ui.resetSurveyState === "function") {
+        App.ui.resetSurveyState();
+      }
     });
   }
 
@@ -278,5 +214,82 @@ window.App = window.App || {};
     dashboardContainer.classList.remove("hidden");
     if (App.chatbot) App.chatbot.hide();
     App.ui.dashboard.refresh();
+  };
+
+  /**
+   * Resetea el estado de la encuesta y la interfaz.
+   * @param {Object} [opts] - Opciones, por ejemplo { silent: true } para no mostrar toast
+   */
+  App.ui.resetSurveyState = function (opts) {
+    opts = opts || {};
+    // Clear app storage via App.storage if available
+    try {
+      if (App.storage && typeof App.storage.clearState === "function") {
+        App.storage.clearState();
+      }
+    } catch (e) {}
+
+    // Also clear other known keys used by moduleManager
+    try {
+      localStorage.removeItem("ipv6_survey_v1");
+    } catch (e) {}
+
+    // Optionally clear chat histories per module keys
+    try {
+      Object.keys(localStorage).forEach((k) => {
+        if (k && k.indexOf("chat_history_") === 0) localStorage.removeItem(k);
+        if (k && k.indexOf("chat_welcome_seen_") === 0)
+          localStorage.removeItem(k);
+      });
+    } catch (e) {}
+
+    // Reiniciar nivelActual a 1 para habilitar los módulos de nivel 1
+    if (typeof nivelActual !== "undefined") nivelActual = 1;
+
+    // Refresh dashboard and modules
+    try {
+      if (
+        App.ui &&
+        App.ui.dashboard &&
+        typeof App.ui.dashboard.refresh === "function"
+      )
+        App.ui.dashboard.refresh();
+      if (App.ui && typeof App.ui.showDashboard === "function")
+        App.ui.showDashboard();
+      if (App.moduleManager && App.moduleManager._state) {
+        App.moduleManager._state = {
+          currentModuleId: null,
+          questionList: [],
+          index: 0,
+          seenCount: 0,
+          totalForModule: 0,
+        };
+      }
+      // Limpiar historial visual del chat
+      if (App.chatbot) {
+        // Vaciar contenedor de conversación
+        var convoEl = document.getElementById("chatConversation");
+        if (convoEl) convoEl.innerHTML = "";
+        // Reiniciar estado interno
+        App.chatbot._currentModuleId = null;
+        App.chatbot._currentQuestionId = null;
+        if (typeof App.chatbot._loadHistory === "function") {
+          App.chatbot._loadHistory(null);
+        }
+      }
+    } catch (e) {}
+
+    // Notify user (solo si no es silent)
+    if (!opts.silent) {
+      try {
+        if (App.toast && typeof App.toast.show === "function") {
+          App.toast.show(
+            "Datos reiniciados. Puedes iniciar una nueva evaluación."
+          );
+        } else {
+          alert("Datos reiniciados. Puedes iniciar una nueva evaluación.");
+        }
+      } catch (e) {}
+    }
   };
 })(window.App);
