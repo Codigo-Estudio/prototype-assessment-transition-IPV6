@@ -75,7 +75,6 @@ window.App = window.App || {};
   }
 
   function renderCards() {
-    cardsContainer.innerHTML = "";
     // Obtener progreso por módulo
     const progresoPorModulo = {};
     App.modules.forEach((m) => {
@@ -114,8 +113,17 @@ window.App = window.App || {};
       }
     }
 
-    // Renderizar cards visibles en orden, solo habilitar el primero pendiente
+    // Cambiar clase según contexto: perfilamiento o módulos activos
+    if (
+      modulosVisibles.length === 1 &&
+      modulosVisibles[0].id === "mod_perfilamiento"
+    ) {
+      cardsContainer.className = "dashboardCards dashboardCards-perfil";
+    } else {
+      cardsContainer.className = "dashboardCards dashboard-card-grid";
+    }
     cardsContainer.innerHTML = "";
+    // Renderizar cards visibles en orden, solo habilitar el primero pendiente
     let moduloHabilitado = false;
     modulosVisibles.forEach((modulo) => {
       const progress = App.dashboard.getModuleProgress(modulo.id);
