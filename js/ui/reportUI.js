@@ -33,10 +33,15 @@ App.ui = App.ui || {};
       reportEl.innerHTML = "";
     }
 
-    // Header
+    // Header con logo
     const header = document.createElement("header");
     header.className = "report-header";
+    let logoHtml = "";
+    if (App.moduleIcons && App.moduleIcons.slogan_cun) {
+      logoHtml = `<div class='report-logo'>${App.moduleIcons.slogan_cun}</div>`;
+    }
     header.innerHTML = `
+      ${logoHtml}
       <h1>Informe de Madurez IPv6</h1>
       <p>Este informe resume el nivel de madurez general y por módulo de tu organización en la transición a IPv6.</p>
     `;

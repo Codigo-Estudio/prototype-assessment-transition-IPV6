@@ -86,12 +86,8 @@
 
 /* Selected feedback */
 .chatbot-options button.selected {
-  border-color: var(--color-primary-700);
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    var(--color-primary-700)
-  );
+  border-color: var(--color-border);
+  background: var(--color-primary);
   color: var(--color-neutral-100);
   box-shadow: 0 8px 26px rgba(11, 139, 137, 0.12);
 }
@@ -119,7 +115,12 @@
 .modal-progress .fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  background: linear-gradient(
+    90deg,
+    var(--color-danger),
+    var(--color-warning),
+    var(--color-success)
+  );
   transition: width 420ms ease;
 }
 
@@ -167,16 +168,12 @@
   font-size: 0.96rem;
 }
 .chat-msg.bot .chat-bubble {
-  background: var(--color-neutral-100);
+  background: var(--color-neutral-200);
   color: var(--color-dark);
   border-top-left-radius: 4px;
 }
 .chat-msg.user .chat-bubble {
-  background: linear-gradient(
-    90deg,
-    var(--color-primary),
-    var(--color-primary-700)
-  );
+  background: var(--color-primary);
   color: var(--color-neutral-100);
   border-top-right-radius: 4px;
 }
@@ -259,7 +256,8 @@
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid var(--color-border);
-  background: var(--color-neutral-100);
+  background: var(--color-neutral-200);
+  color: var(--color-secondary);
   cursor: pointer;
   font-family: var(--font-sans);
 }

@@ -25,6 +25,21 @@ window.App = window.App || {};
       return;
     }
 
+    // Insertar logo superior si no existe
+    let logoContainer = document.getElementById("dashboardLogo");
+    if (!logoContainer) {
+      logoContainer = document.createElement("div");
+      logoContainer.id = "dashboardLogo";
+      logoContainer.className = "dashboard-logo";
+      if (App.moduleIcons && App.moduleIcons.slogan_cun) {
+        logoContainer.innerHTML = App.moduleIcons.slogan_cun;
+      }
+      dashboardContainer.insertBefore(
+        logoContainer,
+        dashboardContainer.firstChild
+      );
+    }
+
     renderCards();
     updateExportButton();
     attachResetHandler();

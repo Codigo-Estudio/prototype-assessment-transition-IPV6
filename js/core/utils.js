@@ -279,16 +279,24 @@ window.App = window.App || {};
 
     // 2. Forzar fuentes reflow (pequeño timeout opcional)
     setTimeout(function () {
+      // Medidas reales del contenido clonado
+      const contentWidth = Math.max(clone.scrollWidth, 820);
+      const contentHeight = clone.scrollHeight;
+
       window
         .html2canvas(clone, {
           scale: 2, // buena resolución
           useCORS: true,
           backgroundColor: "#ffffff",
-          windowWidth: 820, // asegurar ancho lógico
+          windowWidth: contentWidth,
+          windowHeight: contentHeight,
+          width: contentWidth,
+          height: contentHeight,
+          scrollX: 0,
+          scrollY: 0,
         })
         .then(function (canvas) {
           try {
-            const imgData = canvas.toDataURL("image/png");
             const pdf = new window.jspdf.jsPDF({
               orientation: "portrait",
               unit: "pt",
@@ -297,56 +305,48 @@ window.App = window.App || {};
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
             const margin = 20;
-            const imgWidth = pageWidth - margin * 2;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let remainingHeight = imgHeight;
-            let positionY = margin;
+            const imgWidth = pageWidth - margin * 2; // ancho en puntos para cada página
+            const scale = imgWidth / canvas.width; // puntos por pixel
+            const pageHeightPt = pageHeight - margin * 2; // alto disponible en puntos
+            const pageHeightPx = pageHeightPt / scale; // alto por página en pixels del canvas
 
-            if (imgHeight <= pageHeight - margin * 2) {
+            // Rebanar el canvas en tiras por alto de página, con un leve solapamiento para evitar cortes por redondeo
+            const overlapPx = 2; // solapamiento de seguridad entre páginas
+            let yPx = 0;
+            while (yPx < canvas.height) {
+              const remaining = canvas.height - yPx;
+              const isLast = remaining <= pageHeightPx;
+              const sliceHeightPx = Math.min(pageHeightPx, remaining);
+
+              const pageCanvas = document.createElement("canvas");
+              pageCanvas.width = canvas.width;
+              pageCanvas.height = Math.ceil(sliceHeightPx);
+              const ctx = pageCanvas.getContext("2d");
+              ctx.drawImage(
+                canvas,
+                0,
+                Math.floor(yPx),
+                canvas.width,
+                Math.ceil(sliceHeightPx),
+                0,
+                0,
+                canvas.width,
+                Math.ceil(sliceHeightPx)
+              );
+              const pageImgData = pageCanvas.toDataURL("image/png");
+              const sliceHeightPt = Math.ceil(sliceHeightPx * scale);
               pdf.addImage(
-                imgData,
+                pageImgData,
                 "PNG",
                 margin,
-                positionY,
+                margin,
                 imgWidth,
-                imgHeight
+                sliceHeightPt
               );
-            } else {
-              const pageImgHeight = pageHeight - margin * 2;
-              let pageNum = 0;
-              while (remainingHeight > 0) {
-                const sourceY =
-                  (canvas.height * (pageNum * pageImgHeight)) / imgHeight;
-                const sourceHeight =
-                  (canvas.height * pageImgHeight) / imgHeight;
-                const pageCanvas = document.createElement("canvas");
-                pageCanvas.width = canvas.width;
-                pageCanvas.height = sourceHeight;
-                const ctx = pageCanvas.getContext("2d");
-                ctx.drawImage(
-                  canvas,
-                  0,
-                  sourceY,
-                  canvas.width,
-                  sourceHeight,
-                  0,
-                  0,
-                  canvas.width,
-                  sourceHeight
-                );
-                const pageImgData = pageCanvas.toDataURL("image/png");
-                pdf.addImage(
-                  pageImgData,
-                  "PNG",
-                  margin,
-                  positionY,
-                  imgWidth,
-                  pageImgHeight
-                );
-                remainingHeight -= pageImgHeight;
-                pageNum++;
-                if (remainingHeight > 0) pdf.addPage();
-              }
+
+              if (isLast) break;
+              yPx += sliceHeightPx - overlapPx; // aplicar solapamiento sólo si no es la última página
+              if (yPx < canvas.height) pdf.addPage();
             }
             pdf.save(filename);
           } finally {
