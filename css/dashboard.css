@@ -68,7 +68,6 @@
 .dashboard-card .card-title {
   margin: 0;
   font-weight: 700;
-  color: var(--color-dark);
   font-size: 1rem;
   text-align: center;
 }
@@ -206,5 +205,33 @@
   .dashboard-card {
     -webkit-tap-highlight-color: transparent;
     outline: none;
+  }
+}
+.dashboard-logo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-left: 0;
+  width: 132px;
+  height: 60px;
+}
+.dashboard-logo .eslogan-logo-svg {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .dashboard-logo {
+    width: 110px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-logo {
+    width: 88px;
+    height: 40px;
   }
 }

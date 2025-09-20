@@ -30,18 +30,17 @@
   --transition-smooth: 350ms;
 
   /* Paleta (Kit UI propio) */
-  --color-primary: #0ea5a4; /* verde-azulado */
-  --color-primary-700: #0b8b89;
-  --color-accent: #f2b705; /* mostaza */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --bg-main: #fbfdff;
-  --color-dark: #333333;
-  --color-muted: #6b7280;
+  --color-primary: #91dc00; /* Verde lima */
+  --color-secondary: #007a33; /* Verde azulado */
+  --color-tertiary: #0c2340; /* Azul muy oscuro */
+  --color-success: #10b981; /* Verde */
+  --color-warning: #f59e0b; /* Amarillo */
+  --color-danger: #ef4444; /* Rojo */
+  --color-dark: #333333; /* Texto oscuro */
+  --color-muted: #6b7280; /* Texto atenuado */
   --color-neutral-100: #ffffff;
-  --color-neutral-200: #f3f6f7;
-  --color-border: #e6eef0;
+  --color-neutral-200: #f6f6f6;
+  --color-border: #007a33; /*#e6eef0*/
 }
 
 /* Reset / base */
@@ -54,8 +53,8 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background: var(--bg-main);
-  color: var(--color-dark);
+  background: var(--color-neutral-100);
+  color: var(--color-tertiary);
   font-family: var(--font-sans);
   font-size: 1.125rem;
   line-height: 1.45;
@@ -99,7 +98,9 @@ p {
   color: var(--color-muted);
   font-weight: 400; /* Regular */
 }
-
+span {
+  color: var(--color-secondary);
+}
 /* Small helpers */
 .center {
   text-align: center;

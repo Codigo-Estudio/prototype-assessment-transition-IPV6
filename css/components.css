@@ -22,12 +22,8 @@
 
 /* Primary */
 .btn-primary {
-  background: linear-gradient(
-    180deg,
-    var(--color-primary),
-    var(--color-primary-700)
-  );
-  color: var(--color-neutral-100);
+  background: var(--color-primary);
+  color: var(--color-neutral-200);
   box-shadow: var(--shadow-soft);
 }
 .btn-primary:active {
@@ -42,7 +38,7 @@
 
 /* Secondary */
 .btn-secondary {
-  background: transparent;
+  background: var(--color-neutral-200);
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
 }
@@ -50,21 +46,9 @@
   /* Efectos hover solo para dispositivos que soportan hover (escritorio) */
   .btn-secondary:hover {
     background: var(--color-primary);
-    color: var(--color-neutral-100);
+    color: var(--color-neutral-200);
   }
   .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
-  }
-}
-
-/* Táctil / responsivo: aplica el efecto en active (tocar/clic) para que no se quede pegado en dispositivos táctiles */
-@media (hover: none) and (pointer: coarse) {
-  .btn-secondary:active {
-    background: var(--color-primary);
-    color: var(--color-neutral-100);
-  }
-  .btn-primary:active {
     transform: translateY(-3px);
     box-shadow: var(--shadow-hover);
   }
@@ -87,7 +71,11 @@
   font-size: 0.78rem;
 }
 .badge.pending {
-  background: linear-gradient(90deg, var(--color-warning), var(--color-accent));
+  background: linear-gradient(
+    90deg,
+    var(--color-warning),
+    var(--color-warning)
+  );
   color: var(--color-dark);
 }
 .badge.complete {
@@ -137,7 +125,7 @@
     border-color var(--transition-fast);
 }
 .input:focus {
-  border-color: var(--color-primary-700);
+  border-color: var(--color-primary);
   box-shadow: 0 6px 20px rgba(11, 139, 137, 0.06);
 }
 
